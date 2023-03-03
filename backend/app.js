@@ -6,17 +6,17 @@ const dotenv = require('dotenv');
 require('dotenv').config();
 const mysql = require('mysql');
 const sql = require('mssql');
+const sequelize = require('./config/db.config2');
 
 
+//mongoose.connect('mongodb+srv://julianj96:otakuJj9672$@jucluster0.2g5jb2b.mongodb.net/?retryWrites=true&w=majority')
 
-mongoose.connect('mongodb+srv://julianj96:otakuJj9672$@jucluster0.2g5jb2b.mongodb.net/?retryWrites=true&w=majority')
-.then(() => {
-    console.log('successfully connected to MongoDb Atlus');
-})
-.catch((error) => {
-    console.log('unable to connect to MongoDb Atlus');
-    console.error('error');
+sequelize.authenticate().then(() => {
+    console.log('Connection successful!');
+}) .catch((err) => {
+    console.log('error connecting to database!')
 });
+
 
 
 app.use((req, res, next)  =>{
