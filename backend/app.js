@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 const path = require('path');
 const dotenv = require('dotenv');
 require('dotenv').config();
+const mysql = require('mysql');
+const sql = require('mssql');
+
 
 
 mongoose.connect('mongodb+srv://julianj96:otakuJj9672$@jucluster0.2g5jb2b.mongodb.net/?retryWrites=true&w=majority')
