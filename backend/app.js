@@ -7,6 +7,8 @@ require('dotenv').config();
 const mysql = require('mysql');
 const sql = require('mssql');
 const sequelize = require('./config/db.config2');
+const { Console } = require('console');
+const cors = require('cors');
 
 
 //mongoose.connect('mongodb+srv://julianj96:otakuJj9672$@jucluster0.2g5jb2b.mongodb.net/?retryWrites=true&w=majority')
