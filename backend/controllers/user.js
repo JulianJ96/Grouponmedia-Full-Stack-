@@ -57,3 +57,51 @@ exports.signup = async (req, res, next) => {
 
 
 /* FUNCTION TO LOGIN A USER!*/
+exports.login = async (req, res, next) => {
+    let user;
+    try{
+        user = await User.findOne({ where: {email: req.body.email} });
+    } catch (error){
+        res.status(402).send({ message: "User not Found!"});
+    }
+    if(user){
+        try{
+            const check = await bcrypt.compare(req.body.password, user.password);
+            if(!check){
+                res.status(401).send({ message: "Password Incorrect"});
+            } else{
+                const token = jwt.sign({ userId: user.idUser}, 'RANDOM_TOKEN_SECRET', {expiresIn: '24H'});
+                res.status(201).send({
+                    email: user.email,
+                    userId: user.idUser,
+                    token: token,
+                    firstname: user.firstname,
+                    lastname: user.lastname
+                });
+            } 
+            } catch (error){
+                res.status(401).send({
+                    message: "Something went wrong!"
+            });
+        }
+    } else{
+        res.status(400).send({message: "User not Found"});
+    }
+};
+
+
+/*  FUNCTION TO GET A USER*/
+exports.getuser = async(req,res,next) => {
+    try{
+        const user = await User.findOne({
+            attibrutes: {
+                exclude: ['password','myDate', 'createAt', 'updateAt']}, 
+            where: {
+                idUser: req.params.id
+            }
+        });
+        res.send(user.dataValues)
+    } catch(error){
+        res.status(400).send({message: "Not user found"});
+    }
+};
