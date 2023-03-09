@@ -1,0 +1,17 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 33060,
+            "driver": "MySQL",
+            "name": "Local",
+            "database": "Grouponmania",
+            "username": "root",
+            "password": "otakuJj9672$"
+        }
+    ]
+}

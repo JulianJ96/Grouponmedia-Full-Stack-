@@ -39,10 +39,13 @@ const Reply = sequelize.define('Reply', {
 })
 
 
-Comment.hasMany(Reply, {foreignKey: 'idCommentReply', sourceKey: 'idComment'});
+Comment.hasMany(Reply, {
+    foreignKey: 'idCommentReply',
+    sourceKey: 'idComment'
+});
 Reply.belongsTo(Comment, {foreignKey: 'idCommentReply', targetKey: 'idComment'});
 
 //Exporting Reply, using this constant
 //we can perform CRUD operations on
 //'Reply' table.
-module.exports = Reply;
+module.exports = Reply
