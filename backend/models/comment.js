@@ -36,9 +36,9 @@ const Reply = require('./reply');
 })
   
 
-
-
-  // Exporting User, using this constant
-  // we can perform CRUD operations on
-  // 'Comment' table.
-  module.exports = Comment
+User.hasMany(Comment, {foreignKey: 'idUserComment', sourceKey: 'idUser',onDelete: 'cascade'});
+Comment.belongsTo(User, {foreignKey: 'idUserComment', targetKey: 'idUser'});
+// Exporting User, using this constant
+// we can perform CRUD operations on
+// 'Comment' table.
+module.exports = Comment

@@ -19,7 +19,11 @@ sequelize.authenticate().then(() => {
     console.log('error connecting to database!')
 });
 
-
+try{
+    sequelize.sync({force:false})
+} catch(error){
+    console.log(error)
+}
 
 app.use((req, res, next)  =>{
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -31,6 +35,8 @@ app.use((req, res, next)  =>{
 
 // Routes Const
 const userRoutes = require('./routes/user');
+const replyRoutes = require('./routes/reply');
+const commentRoutes = require('./routes/comment');
 
 // Uses
 app.use(express.json());
@@ -42,5 +48,7 @@ app.use('', express.static(path.join(__dirname, 'images')));
 // Routes
 
 app.use('/api/auth', userRoutes);
+app.use('/api/reply', replyRoutes);
+app.use('/api/comment', commentRoutes); 
 
 module.exports = app;
