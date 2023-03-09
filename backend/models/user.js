@@ -44,5 +44,5 @@ const User = sequelize.define('User', {
 // we can perform CRUD operations on
 // 'user' table.
 
-module.exports = User;
+module.exports = User
 
