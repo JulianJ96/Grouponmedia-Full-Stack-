@@ -30,7 +30,7 @@ app.use((req, res, next)  =>{
 
 
 // Routes Const
-
+const userRoutes = require('./routes/user');
 
 // Uses
 app.use(express.json());
@@ -41,5 +41,6 @@ app.use('', express.static(path.join(__dirname, 'images')));
 
 // Routes
 
+app.use('/api/auth', userRoutes);
 
 module.exports = app;
