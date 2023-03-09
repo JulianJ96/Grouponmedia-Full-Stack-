@@ -7,6 +7,7 @@ const Comment = require('../models/comment');
 const Reply = require('../models/reply');
 const { QueryTypes } = require('sequelize');
 const script = require('../js/script');
+const req = require('express/lib/request');
 
 
 /* FUNCTION TO SIGNUP A USER! */
@@ -102,6 +103,97 @@ exports.getuser = async(req,res,next) => {
         });
         res.send(user.dataValues)
     } catch(error){
-        res.status(400).send({message: "Not user found"});
+        res.status(400).send({message: "No user found"});
     }
 };
+
+
+/* FUNCTION TO DELETE A USER*/
+exports.deleteuser = async (req,res,next) => {
+    try{
+        const user = await User.destroy({ where: {email: req.params.id}});
+        if(user === 1){
+            res.status(200).send({
+                message: "User Deleted!"
+            });
+        } else {
+            res.status(400).send({
+                message: "No User Found!"
+            });
+        }
+    } catch(error){
+        next(error);
+    }
+};
+
+
+/* FUNCTION TO SAVE ALL COMMENTS READ BY USER */
+exports.addpostreaduser = async (req,res,next) => {
+    let arrayTags = [];
+        try{
+            const user = await User.findOne({ where: {idUser: req.body.userId}});
+            var conditional = user.dataValues.tag_posts;
+            if(conditonal === null){
+                var num = req.body.postiD
+                num = num.toString();
+                arrayTags.push(num)
+                var newArray = arrayTags.toLocaleString();
+                const user2 = await User.update({tag_posts: newArray}, {
+                    where: {
+                        idUser: req.body.userId
+                    }
+                });
+                if (user2 == 1) {
+                    res.status(201).send({
+                        message: "comment viewed successfully"
+                    })
+                } else {
+                    res.status(500).send({
+                        message: "comment is already viewed"
+                    });
+                }
+            } else {
+                var tags = JSON.parse(JSON.stringify(user.dataValues.tag_posts))
+                var post_condition = true;
+                tags = tags.split(",");
+                for (var i = 0; i < tags.length; i++){
+                    if(parseInt(tags[i]) === req.body.postiD){
+                        post_condition = false;
+                        i = (tags.length)+1;
+                    }
+                }
+                if(post_condition === true){
+                    var tags = JSON.parse(JSON.stringify(user.dataValues.tag_posts));
+                    arrayTags.push(tags);
+                    /* var value = JSON.parse(JSON.stringify(req.body.postiD))
+                    arrayTags.push(value);*/
+                }
+                var num = req.body.postiD
+                num = num.toString();
+                arrayTags.push(num)
+                var newArray = arrayTags.toLocaleString();
+                const user2 = await User.update({ tag_posts: newArray }, {
+                    where: {
+                        idUser: req.body.userId
+                    }
+                });
+                if(user2 == 1){
+                    res.status(201).send({
+                        message: "comment viewed successfully"
+                    })
+                } else {
+                    res.status(500).send({
+                        message: "comment is already viewed"
+                    });
+                }
+
+            }
+        } catch (error){
+            res.status("error");
+            if(error.number == 2627){
+                res.status(500).send({
+                    message: "Something went wrong!"
+                });
+            }
+        }
+} 
