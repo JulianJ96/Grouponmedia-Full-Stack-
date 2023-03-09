@@ -3,6 +3,7 @@
   // Database connection pool managed by Seque4AtDDQlize.
   const sequelize = require('../config/db.config2');
   const User =  require('../models/user');
+const Reply = require('./reply');
   // Define method takes two arguments
   // 1st - name of table
   // 2nd - columns inside the table
@@ -32,9 +33,8 @@
       // Timestamps
       createdAt: Sequelize.DATE,
       updatedAt: Sequelize.DATE,
-  })
+})
   
-
 
 
 
