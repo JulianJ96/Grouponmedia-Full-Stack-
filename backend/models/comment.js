@@ -3,7 +3,6 @@
   // Database connection pool managed by Seque4AtDDQlize.
   const sequelize = require('../config/db.config2');
   const User =  require('../models/user');
-const Reply = require('./reply');
   // Define method takes two arguments
   // 1st - name of table
   // 2nd - columns inside the table
@@ -34,10 +33,12 @@ const Reply = require('./reply');
       createdAt: Sequelize.DATE,
       updatedAt: Sequelize.DATE,
 })
-  
 
-User.hasMany(Comment, {foreignKey: 'idUserComment', sourceKey: 'idUser',onDelete: 'cascade'});
+
+
+User.hasMany(Comment, {foreignKey: 'idUserComment', sourceKey: 'idUser', onDelete: 'cascade'});
 Comment.belongsTo(User, {foreignKey: 'idUserComment', targetKey: 'idUser'});
+
 // Exporting User, using this constant
 // we can perform CRUD operations on
 // 'Comment' table.
