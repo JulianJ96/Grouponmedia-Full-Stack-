@@ -8,7 +8,7 @@ const Comment = require('../models/comment');
 //define method takes two arguments
 // 1st - name of table
 // 2nd - columns inside the table
-const User = sequelize.define('User', {
+const UserModel = sequelize.define('User', {
 
     //Column-1 user_id is a object with
     //properites like type, keys,

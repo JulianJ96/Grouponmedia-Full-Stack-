@@ -34,10 +34,8 @@
       updatedAt: Sequelize.DATE,
 })
 
-
-
-User.hasMany(Comment, {foreignKey: 'idUserComment', sourceKey: 'idUser', onDelete: 'cascade'});
-Comment.belongsTo(User, {foreignKey: 'idUserComment', targetKey: 'idUser'});
+User.hasMany(Comment, {foreignKey: 'idUserComment', sourceKey: 'idUser',onDelete: 'cascade'});
+Comment.belongsTo(User, {foreignKey: 'idUserComment', targetKey: 'idUser'});  
 
 // Exporting User, using this constant
 // we can perform CRUD operations on
