@@ -12,6 +12,32 @@
             "database": "Grouponmania",
             "username": "root",
             "password": "otakuJj9672$"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "Local",
+            "database": "Grouponmania",
+            "username": "root",
+            "password": "otakuJj9672$"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "MySQLConnection",
+            "database": "Grouponmania",
+            "username": "root",
+            "password": "otakuJj9672$"
         }
     ]
 }

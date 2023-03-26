@@ -1,7 +1,8 @@
+  // Include Sequelize module.
   const Sequelize = require('sequelize')
   // Import sequelize object,
   // Database connection pool managed by Seque4AtDDQlize.
-  const sequelize = require('../config/db.config2');
+  const sequelize = require('../config/db.config2')
   const User =  require('../models/user');
   // Define method takes two arguments
   // 1st - name of table
@@ -16,7 +17,7 @@
           /* For uniquely identify Comment.*/primaryKey:true
       },
       idUserComment: {
-        type: Sequelize.INTEGER,
+        type:Sequelize.INTEGER,
         /* user_id can not be null.*/allowNull:false,
     },
       // Column-2, lastname
@@ -32,12 +33,11 @@
       // Timestamps
       createdAt: Sequelize.DATE,
       updatedAt: Sequelize.DATE,
-})
-
-User.hasMany(Comment, {foreignKey: 'idUserComment', sourceKey: 'idUser',onDelete: 'cascade'});
-Comment.belongsTo(User, {foreignKey: 'idUserComment', targetKey: 'idUser'});  
-
-// Exporting User, using this constant
-// we can perform CRUD operations on
-// 'Comment' table.
-module.exports = Comment
+  })
+  
+  User.hasMany(Comment, {foreignKey: 'idUserComment', sourceKey: 'idUser',onDelete: 'cascade'});
+  Comment.belongsTo(User, {foreignKey: 'idUserComment', targetKey: 'idUser'});
+  // Exporting User, using this constant
+  // we can perform CRUD operations on
+  // 'Comment' table.
+  module.exports = Comment

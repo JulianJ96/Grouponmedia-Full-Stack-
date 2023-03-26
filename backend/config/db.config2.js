@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
 const sequelize = new Sequelize(
-    'Grouponmania',
+    'Groupon-Full-Stack',
     'root',
     'otakuJj9672$', {
         dialect: 'mysql',
