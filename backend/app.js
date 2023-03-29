@@ -32,6 +32,9 @@ app.use((req, res, next)  =>{
     next();
 });
 
+// Sequelize Instances
+
+
 
 // Routes Const
 const userRoutes = require('./routes/user');
