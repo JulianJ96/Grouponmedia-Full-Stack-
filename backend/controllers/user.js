@@ -133,7 +133,7 @@ exports.addpostreaduser = async (req,res,next) => {
         try{
             const user = await User.findOne({ where: {idUser: req.body.userId}});
             var conditional = user.dataValues.tag_posts;
-            if(conditonal === null){
+            if(conditional === null){
                 var num = req.body.postiD
                 num = num.toString();
                 arrayTags.push(num)
@@ -153,9 +153,8 @@ exports.addpostreaduser = async (req,res,next) => {
                     });
                 }
             } else {
-                var tags = JSON.parse(JSON.stringify(user.dataValues.tag_posts))
+                var tags = JSON.parse(JSON.stringify(user.dataValues.tag_posts.split(",")))
                 var post_condition = true;
-                tags = tags.split(",");
                 for (var i = 0; i < tags.length; i++){
                     if(parseInt(tags[i]) === req.body.postiD){
                         post_condition = false;
@@ -164,14 +163,14 @@ exports.addpostreaduser = async (req,res,next) => {
                 }
                 if(post_condition === true){
                     var tags = JSON.parse(JSON.stringify(user.dataValues.tag_posts));
-                    arrayTags.push(tags);
+                    arrayTags.push(tags[i]);
                     /* var value = JSON.parse(JSON.stringify(req.body.postiD))
                     arrayTags.push(value);*/
                 }
                 var num = req.body.postiD
                 num = num.toString();
                 arrayTags.push(num)
-                var newArray = arrayTags.toLocaleString();
+                var newArray = arrayTags.join(",");
                 const user2 = await User.update({ tag_posts: newArray }, {
                     where: {
                         idUser: req.body.userId

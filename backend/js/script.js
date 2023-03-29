@@ -1,7 +1,8 @@
 // Function to check password security
 let checkPassword = function(inputtxt) {
-
-
+    if (!inputtxt) {
+        return { conditional: false, message: "No password provided" };
+    }
     // Password more than 6 and less than 20 characters
     var passw = /^(.{6,20})/g;
     // Password must contain a number
@@ -36,6 +37,7 @@ let checkPassword = function(inputtxt) {
     }
     return arr;
 }
+
 
 // Funciton to modify array of likes or dislikes
 let modifyArray = function(usersArray,userId,option) {
