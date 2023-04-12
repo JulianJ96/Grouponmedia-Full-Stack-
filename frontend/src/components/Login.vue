@@ -2,7 +2,7 @@
   <div id="main">
     <h1>{{ msg }}</h1>
     <main class="form-signin">
-      <img class="mb-4 img-fluid" src="../assets/images/icon-left-font-monochrome-white.svg" alt="Grupomania">
+      <img class="mb-4 img-fluid" src='' alt="Grupomania">
       <form>
         <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
         <div class="form-floating">
