@@ -6,6 +6,7 @@ export default{
         return res.data;
     },
     async getEventSingle(id){
-        let res = await axios.get("http://localhost:")
+        let res = await axios.get("http://localhost:5173/api/auth/signin" + id);
+        return res.data;
     }
 }
