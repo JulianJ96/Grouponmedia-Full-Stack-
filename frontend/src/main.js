@@ -12,3 +12,5 @@ app.use(router)
 app.use(global)
 app.config.globalProperties.$http = base;
 app.mount('#app')
+
+
