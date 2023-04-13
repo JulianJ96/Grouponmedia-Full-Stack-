@@ -11,17 +11,21 @@
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.0.4",
-    "vue": "^3.2.47",
+    "lint": "^0.8.19",
+    "vue": "^3.2.36",
+    "vue-axios": "^3.5.2",
     "vue-router": "^4.1.6",
-    "vuex": "^4.1.0"
+    "vue3-tel-input": "^1.0.4",
+    "vuelidate": "^0.7.7",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.2.0",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vue/eslint-config-prettier": "^7.1.0",
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "eslint": "^8.34.0",
-    "eslint-plugin-vue": "^9.9.0",
+    "eslint-plugin-vue": "^9.10.0",
     "prettier": "^2.8.4",
     "vite": "^4.1.4",
     "vue-cli-plugin-axios": "~0.0.4"
