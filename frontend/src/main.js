@@ -10,8 +10,7 @@ import VueAxios from 'vue-axios'
 import VueTelInput from 'vue3-tel-input'
 import 'vue3-tel-input/dist/vue3-tel-input.css'
 import Vuelidate from 'vuelidate'
-import "boostrap/dist/css/boostrap.min.css"
-import "boostrap"
+import "bootstrap"
 const app = createApp(App)
 app.use(router)
 app.use(global)

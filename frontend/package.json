@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.0.4",
+    "bootstrap": "^5.2.3",
     "lint": "^0.8.19",
     "vue": "^3.2.36",
     "vue-axios": "^3.5.2",
