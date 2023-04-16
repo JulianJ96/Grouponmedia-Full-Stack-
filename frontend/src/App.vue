@@ -1,88 +1,151 @@
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/Login.vue'
+<template>
+<div id="main">
+  <nav class="navbar navbar-expand-lg navbar-light fixed-top bg-white pt-0 pb-0">
+    <div class="container-fluid">
+      <div class="navbar-header">
+
+      <router-link class="navbar-brand me-0" to="/dashboard">
+      <img src="./assets/Groupomania-Logos/icon-left-font-monochrome-black.svg" alt="Grupomania" >
+      </router-link> 
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+        </div>
+
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+        <div class="navbar-nav ms-auto me-3 mb-2 mb-lg-0">
+          <li class="nav-item">
+            <router-link class="nav-link" v-if="!isdashboardPage()" to="/dashboard">{{this.user.firstname+' '+this.user.lastname}}</router-link> 
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" v-if="!isauth()" to="/"> Sign In </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" v-if="!isauth()" to="/signup"> Sign Up </router-link> 
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" v-if="!isdashboardPage()" to="/profile"> Profile </router-link> 
+          </li>
+          <li id="notification" v-if="notification()" class="nav-item bg-secondary rounded-pill">
+          <router-link class="nav-link" v-if="!isdashboardPage()" to="/dashboard"> Inbox 
+          <span v-if="this.user.post_unread" >
+            {{this.user.post_unread}}
+          </span>
+          </router-link>
+          </li>
+
+          <li class="nav-item">
+            <router-link @click="logout()" class="nav-link" v-if="!isdashboardPage()" to="/">Log out </router-link> 
+          </li>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <router-view/>
+</div> 
+</template>
+<script>
+import { mapState } from "vuex";
+  export default {
+    name: 'App',
+    mounted() {
+       const user = localStorage.getItem('userId')
+      if(user) {
+      this.user.user = localStorage.getItem('userId')
+      this.user.token = localStorage.getItem('token')
+      this.user.idComment = localStorage.getItem('idComment')
+      this.user.id = localStorage.getItem('id')
+      this.user.post_unread = localStorage.getItem('unread')
+      let data1 = localStorage.getItem('id')
+        let url = "http://localhost:3000/api/auth/user/"+data1;
+        this.$http.get(url,{headers: {'Authorization': localStorage.getItem('token')},params:{'userId': this.user.id}}) .then(response => {     
+          this.user.firstname = response.data.firstname
+          this.user.lastname = response.data.lastname
+          this.$router.push(this.$route.path)
+          })
+          .catch(error => {
+             answer.innerHTML = error;
+          });
+    }
+    },
+    computed: {
+    ...mapState({
+      user: (state) => state.user
+    })
+  },
+    methods: {
+       notification: function() {
+         if ( this.user.post_unread >= 1 ){
+           return true
+         }else{
+            return false
+         }
+       },
+      isdashboardPage: function() {
+        if ( this.$route.path === '/' || this.$route.path === '/signup'){
+          return true
+        }else{
+          return false
+        }
+      },
+      inbox: function() {
+        if ( this.$route.path === '/' || this.$route.path === '/signup'){
+          return true
+        }else{
+          return false
+        }
+      },
+      isauth: function() {
+       
+        if(this.user.user != "" || this.user.token != ""){
+          return true;
+        }else{
+          return false;
+        }
+      },
+     logout() {
+       //sessionStorage.clear();
+      localStorage.removeItem('id')
+      localStorage.removeItem('unread')
+      localStorage.removeItem('userId')
+      localStorage.removeItem('token')
+        this.$store.commit('clear'); 
+        this.$router.push('/');
+      }
+    },
+  };
 </script>
 
-<template>
-  <div>
-    <header>
-      <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-      <div class="wrapper">
-        <HelloWorld msg="You did it!" />
-
-        <nav>
-          <RouterLink to="/">Home</RouterLink>
-          <RouterLink to="/about">About</RouterLink>
-        </nav>
-      </div>
-    </header>
-
-    <RouterView />
-  </div>
-</template>
-
-
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+<style lang="scss">
+html {
+    height: 100%;
 }
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+body {
+    height: 100%;
 }
-
-nav {
-  width: 100%;
-  font-size: 12px;
+#main {
+    height: 100%;
+}
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  margin-top: 2rem;
+  color: #2c3e50;
+  height: 100%;
 }
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+#nav {
+  padding: 30px;
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+    &.router-link-exact-active {
+      color: #42b983;
+    }
   }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+}
+.fixed-top .navbar-collapse {
+  max-height: 340px;
+  overflow-y: auto;
 }
 </style>
