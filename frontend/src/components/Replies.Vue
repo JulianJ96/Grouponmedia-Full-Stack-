@@ -1,136 +1,303 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-   
-<main class="form-signin">
-  <form>
-    <img class="mb-4" src="../assets/Groupomania-Logos/icon.png" alt="" width="72" height="72">
+  <div>
+    <div id="post_actions" class="mb-sm-1 mb-1 me-sm-5 ms-sm-5 me-5 ms-5 row h-75">
+          <div v-if="replies_shared" id="posts" class="col-7 col-sm-9 ps-0 pe-0 col-lg-9 col-xl-9 offset-1 offset-sm-2 offset-lg-2 offset-xl-2 " >
+      <div :class="'background_read'" v-for="postsdata in replies_shared" :key="postsdata.idComment" :id="'posts'+postsdata.idComment" class="col-12 mt-sm-3 mb-sm-3 mt-2 mb-2 me-xl-0 ms-xl-0">
+         <div id="posts_information" class=" d-inline-flex col-12 mt-sm-3">
+            <div class="text-start ps-3 mb-0 col-12">
+              <p>
+              Post made by {{postsdata.firstname}} {{postsdata.lastname}} on {{commentdate(postsdata.myDate)}}
+              </p> 
+            </div>
+          <div id="comments" class="col-12 mt-sm-3">
+          <div id="comments" class="ps-5 col-12">
+              <p class="text-start ">
+              {{postsdata.comment}}
+              </p>  
+            </div>
+          </div>
+          <div v-if="postsdata.video" id="postsmultimedia" class="col-12 w">
+            <video class="img-fluid" controls>
+                <source :src="require('../../../assets/'+postsdata.video)" type="video/mp4">
+              </video> 
+          </div>
+          <div v-if="postsdata.image" id="postsimages" class="border col-12">
+            <img :src="require('../../../assets/'+postsdata.image)" class="img-fluid" :alt="postsdata.image">
+          </div>
+          <div v-if="postsdata.reply" id="replypost" class="border col-12 mt-sm-3">
+            <div id="replyposts" class="border col-12">
+              <p class="text-start ">
+              {{postsdata.reply}}
+              </p>  
+            </div>
+          </div>
+          <div v-if="replyresponse" id="comments_actions" class="col-12 d-flex mt-2 mb-2 me-2 align-content-center flex-wrap">
+            <div id="comments" class=" col-xl-12">
+
+              <a class="navbar-brand me-0 pt-0 pb-0 w-100 h-100" href="#">
+                <img src="../assets/Groupomania-Logos/comment.webp" class="img-fluid" alt="" width="25" height="25">
+              </a>
+              <a :id="'button'+postsdata.idComment" @click="show(postsdata.idComment)" class="navbar-brand me-0 pt-0 pb-0">
+                {{postsdata.total_replies}} Comments
+              </a>
+
+              </div>
+          </div>
+          <div v-if="replyresponse" id="replies" class=" ps-3 pe-3 col-12 d-flex mt-2 mb-2 me-2">
+            <div :id="'show'+postsdata.idComment" class="d-none col-12" >
     
-    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+                <div v-for="replys in postsdata.replies" :key="replys.idReply" class="col-12" >
 
-    <div class="form-floating">
-      <input oninvalid="this.setCustomValidity('Please fill out your email')" type="email" class="form-control" id="validationDefaultUsername" placeholder="name@example.com" v-model="formdata.username" required>
-      <label for="validationDefaultUsername"  >Email address</label>
-    </div>
-     <div class="form-floating">
-      <input oninvalid="this.setCustomValidity('Please fill out your first name')" type="text" class="form-control text-uppercase" id="validationfirst" placeholder="Victor" v-model="formdata.firstname" required>
-      <label for="validationfirst">First Name</label>
-    </div>
-     <div class="form-floating">
-      <input oninvalid="this.setCustomValidity('Please fill out your last name')" type="text" class="form-control text-uppercase" id="validationlast" placeholder="Salazar" v-model="formdata.lastname" required>
-      <label for="validationlast">Last Name</label>
-    </div>
-    <div class="form-floating">
-       <input type="text" id="validationphone"  class="form-control" placeholder="1111111111" v-model="formdata.phone" required>
-      <label for="validationphone">Phone Number</label>
-    </div>
-    <div class="form-floating">
-      <input type="password" class="form-control" id="validationpassword" placeholder="Password" v-model="formdata.password" required>
-      <label for="validationpassword">Password</label>
-    </div>
-    <div class="form-floating">
-      <input type="password" class="form-control" id="validationpassword2" placeholder="password confirmation" v-model="formdata.password_confirmation" required>
-      <label for="validationpassword2">Password Confirmation</label>
-    </div>
-<!--
-    <div class="checkbox mb-3">
-      <label>
-        <input type="checkbox" value="remember-me"> Remember me
-      </label>
-    </div>
-    -->
-     <div class="checkbox mb-3 mt-4">
-    <button class="w-100 btn btn-lg btn-primary" type="button" @click="submit" >Sign Up</button>
-    </div>
+                  <p  v-if="postsdata.idComment == replys.idCommentReply"  class="border text-start col-12">
+                    {{replys.reply}}
+                </p>
 
-    <p class="mt-5 mb-3 alert-danger" id="answer"></p>
-    <p class="mt-5 mb-3 text-muted">&copy; 2020–2021</p>
-  </form>
-</main>
+              </div>
+            </div>
+          </div>
 
+
+      </div> 
+
+    </div>
+     <p class="mt-5 mb-3 alert-danger" id="answer"></p>
+    </div> 
+        
   </div>
 </template>
 
 <script>
-//import { VueTelInput } from 'vue3-tel-input'
-//import 'vue3-tel-input/dist/vue3-tel-input.css'
-import { mapState } from "vuex";
-const script =  require('../../../backend/js/script');
-//import axios from "axios";
+import { error } from 'console';
+//import { store } from '..auth/store.js';
+import { mapstate } from 'vuex';
+// import axios from 'axios';
+
 export default {
-  //components: { VueTelInput },
-  name: 'SaveUser',
-   data() {
+  name: "Posts",
+  data() {
     return {
-    formdata:{
       username: "",
       password: "",
-      firstname:"",
-      lastname:"",
-      password_confirmation: "",
-      phone: ""
-    },
-     answer:"",
+      replyComment: "",
+      idComment: "",
+      image: null,
+      video: null,
+      multimedia: null,
+      replyresponse: null,
+      user_tag: null,
+      replytext: []
     };
   },
   props: {
-    msg: String
+    replies_shared: {
+      type: Array,
+      required: true
+    },
   },
-   computed: {
-    ...mapState({
+  computed: {
+    ...mapstate({
       user: (state) => state.user
     })
   },
+  mounted(){
+    this.replyresponse = this.replies_shared
+    this.getPostsReplies(this.user.idcomment);
+  },
   methods: {
-    submit(){ 
-      let checkPass = script.checkPassword(this.formdata.password);
-      let checkphone = script.checkPhoneNumber(this.formdata.phone);
-      let answer = document.getElementById("answer");
-      if (this.formdata.firstname === ""&& this.formdata.lastname === "" && this.formdata.phone === "" && this.formdata.password === "" && this.formdata.password_confirmation === "" && this.formdata.username ==="") {
-        this.formdata.password = ""
-        this.formdata.password_confirmation = ""
-        answer.innerHTML = "Please enter all fields";
-      
-      }
-      else if (this.formdata.password === "" && this.formdata.password_confirmation === "" && this.formdata.username !="") {
-        answer.innerHTML = "Please enter passwords";
-      } 
-      else if(this.formdata.password !== this.formdata.password_confirmation){
-        answer.innerHTML = "Please both password must be equal";
-      }
-      else if (this.formdata.password === this.formdata.password_confirmation && checkPass['conditional'] && checkphone['conditional'] && this.formdata.username !=""  && this.formdata.firstname !=""  && this.formdata.lastname !="") {
-       
-       let url = "http://localhost:3000/api/auth/signup";
-        let data1 = {
-          email : this.formdata.username,
-          password : this.formdata.password,
-          firstname :this.formdata.firstname.toUpperCase(),
-          lastname : this.formdata.lastname.toUpperCase(),
-          phonenumber : this.formdata.phone,
+    commentcount(id){
+      var cont = 0;
+
+      var replys = this.replyresponse;
+      if (replys != null){
+        for (var i = 0; i < replys.length; i++){
+          if (replys[i].idcomment == id){
+            cont++
+          }
         }
-        const value = script.checkPassword(this.formdata.password);
-        if(checkPass['conditional'] && checkphone['conditional']){ 
-          this.$http.post(url, data1).then(response => {
-              answer.innerHTML = response.data;
-              this.$store.commit('login',response); 
-              if(response.status === 201 ){
-              this.$router.push('/dashboard')
-              }
-              
-            })
-            .catch(error => {
-              answer.innerHTML = error.response.data.message;
-            });
-        }else{
-          answer.innerHTML = value.message
-        }
-      }else {
-       answer.innerHTML = checkphone['message'];
+        return cont;
+      } else{
+        return cont;
       }
-    
+    },
+    commentdate(datecomment){
+      var date = datecomment.split(',',1);
+      var date1 = new Date(date);
+      var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+      var datestring = date1.toLocaleDateString('en-US', options)+" "+
+      date1.getHours() + ":" + (date1.getMinutes()<10?'0':'') + date1.getMinutes();
+      return datestring;
+    },
+    getPostsReplies(idComment){
+      let url = "/comment"+this.user.id+"/"+idComment;
+      this.$http.get(url,{headers: {'Authorization': this.user.token}, params: {'userId': this.user.id}}).then(response => {
+        this.replyresponse = response.data.comments;
+        this.clear()
+        setTimeout(() => {
+        }, 1000)
+      })
+      .catch(error => {
+        answer.classList.remove('alert-success');
+        answer.classList.add('alert-danger');
+        answer.innerHTML = error.response.data.message;
+      });
+    },
+    post(){
+      const comment = document.getElementById('comment').value;
+      if (comment !== ''){
+        const url = "/comment";
+        const data = {
+          userId: this.user.id,
+          comment: comment,
+        };
+        const formData = new FormData();
+        const fileField = doucment.querySelector('input[type="file"]');
+        formData.append("file", fileField.files[0]);
+        formData.append("data", JSON.stringify(data));
+        const answer = document.getElementById("answer");
+        this.$$http.post(url, formData, {headers:{Authorization: this.user.token }, params: { userId: this.user.user } })
+        .then(response => {
+          setTimeout(()=> {
+            this.clear();
+          }, 1000);
+          if(response.status === 201){
+            answer.innerHTML = "Post created";
+          } else {
+            answer.innerHTML = "Something went wrong";
+          }
+        })
+        .catch(error => {
+          answer.classList.remove('alert-sucess');
+          answer.classList.add('alert-danger');
+          answer.innerHTML = error.response ? error.response.data.message: "Something went wrong";
+        });
+      } else {
+        document.getElementById('comment').placeholder = "Please write something here";
+      }
+    },
+    show (idComment){
+      var display = document.getElementById('show'+idComment);
+    if(display.classList.contains('d-none')){
+      display.classList.remove('d-none');
+      display.classList.add('d-block');
+    } else{
+      display.classList.remove('d-block');
+      display.classList.add('d-none');
+      }
+    },
+    reply(idComment){
+      const comment = document.getElementById("reply").value;
+      if(comment != ''){
+        let url = "/Reply";
+        let data = {
+          userId: this.user.id,
+          idComment: idComment,
+          reply: comment
+        }
+        const formData = new FormData();
+        formData.append("body", JSON.stringify(data1));
+        this.$http.post(url, formData, {headers: {'Authorization': this.user.token}, params: {'userId': this.user.id}}).then(response => {
+          this.idcomment = this.user.idComment;
+          this.getPostsReplies(this.idcomment);
+          let answer = document.getElementById("answer");
+          if(response.status == 201){
+            answer.classList.remove('alert-danger');
+            answer.classList.add('alert-success');
+            answer.innerHTML = "Reply created"
+          } else{
+            answer.classList.remove('alert-danger');
+            answer.classList.add('alert-success');
+            answer.innerHTML = "Something went wrong"
+          }
+          setTimeout(() => {
+            this.clear()
+          }, 1000)
+        }).catch(error => {
+            answer.classList.remove('alert-success');
+            answer.classList.add('alert-danger');
+            answer.innerHTML = error.response.data.message;
+        });
+      } else{
+        document.getElementById(idComment).placeholder = "Please write something here!"
+      }
+    },
+    onUploadFile(){
+      this.$refs.fileInput.click()
+    },
+    onFilePicked(event){
+      let images = document.getElementById("imageUploaded");
+      this.image = this.$refs.fileInput.files[0];
+      const files = event.target.files
+      // let filename = files[0].name
+      const fileReader = new FileReader()
+      fileReader.addEventListener('load', () => {
+        this.imageUrl = fileReader.result;
+        if(files[0].type === 'video/mp4'){
+          if(!document.getElementById("video") && !document.getElementById("image")){
+            createVideo(this.imageUrl)
+          } else{
+            if(!document.getElementById("image")){
+              const picture1 = document.getElementById('image');
+              images.removeChild(picture1);
+            }
+            if(document.getElementById("video")){
+            const picture1 = document.getElementById('video');
+            images.removeChild(picture1);
+            }
+            createImage(this.imageUrl)
+          }
+        }
+      })
+
+      function createVideo(imageUrl){
+        const div1 = document.createElement('video');
+        div1.id = "video"
+        div1.controls = "controls";
+        div1.className = "img-fluid"
+        images.appendChild(div1);
+        const div2 = document.createElement('source');
+        div2.ype = "video/mp4";
+        div2.src = imageUrl;
+        div1.appendChild(div2);      
+      }
+
+      function createImage(imageUrl){
+        const picture = document.createElement('img');
+        picture.id = "image";
+        picture.src = imageUrl;
+        picture.className = "img-fluid";
+        images.appendChild(picture);
+      }
+
+      fileReader.readAsDataURL(files[0])
+      this.multimedia = files[0];
+      //take the first selected file
+    },
+
+    clear(){
+      let images = document.getElementById("imageUploaded");
+      let answer = doucment.getElementById("answer");
+      if (document.getElementById("video")){
+        const picture1 = document.getElementById('video');
+        images.removeChild(picture1);
+      } else {
+        if(document.getElementById("images")){
+          const picture1 = document.getElementById('image');
+          images.removeChild(picture1);
+        }
+      }
+
+      answer.innerHTML = ""
+      this.username = "",
+      this.password = "",
+      this.comment = "",
+      this.image = null,
+      this.video = null,
+      this.multimedia = null,
+      this.replytext = "",
+      this.replyComment = ""
     }
-  }
-}
+  },
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
