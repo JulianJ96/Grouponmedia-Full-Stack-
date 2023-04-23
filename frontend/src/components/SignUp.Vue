@@ -51,15 +51,78 @@
 </template>
 
 <script>
+// import { VueTelInput } from 'vue3-tel-input
+// import 'vue3-tel-input/dist/vue3-tel-input.css;
+import { mapstate } from 'vuex';
 export default {
-  name: "SignUp",
+  // components: { VueTelInput },
+  name: "SaveUser",
   data() {
     return {
-      // your component's data properties go here
+      formdata:{
+        username: "",
+        password: "",
+        firstname: "",
+        lastname: "",
+        password_confirmation: "",
+        phone: "",
+      },
+        answer: ""
     };
   },
+  props: {
+    msg: String
+  },
+  computed: {
+    ...mapstate({
+      user: (state) => state.user
+    })
+  },
   methods: {
-    // your component's methods go here
+    submit(){
+      let checkPass = script.checkPassword(this.formdata.password);
+      let checkPhone = script.checkPhoneNumber(this.formdata.phone);
+      let answer = document.getElementById("answer");
+      if(this.formdata.firstname === "" && this.formdata.lastname === ""&&this.formdata.phone === "" && this.formdata.password === "" && this.formdata.password_confirmation === "" && this.formdata.username ===""){
+        this.formdata.password = ""
+        this.formdata.password_confirmation = ""
+        answer.innerHTML = "Please enter all fields";
+      }
+      else if (this.formdata.password === "" && this.formdata.password_confirmation === "" && this.formdata.username !=""){
+        answer.innerHTML = "Please enter passwords";
+      }
+      else if(this.formdata.password !== this.formdata.password_confirmation){
+        answer.innerHTML = "Please both passwords must be equal";
+      }
+      else if (this.formdata.password === this.formdata.password_confirmation && checkPass['conditional'] && checkPhone['conditonal'] && this.formdata.username !="" && this.formdata.lastname !=""){
+        let url = "http://localhost:3000/api/auth/signup";
+        let data1 = {
+          email: this.formdata.username,
+          password: this.formdata.password,
+          firstname: this.formdata.firstname.toUpperCase(),
+          lastname: this.formdata.lastname.toUpperCase(),
+          phonenumber: this.formdata.phone,
+        }
+
+        const value = script.checkPassword(this.formdata.password);
+        if(checkPass['conditional'] && checkPhone['conditional']){
+          this.$http.post(url,data1).then(response => {
+            answer.innerHTML = response.data;
+            this.$store.commit('login', response);
+            if(response.status === 201){
+              this.$router.push('/dashboard')
+            }
+          })
+          .catch(error => {
+            answer.innerHTML = error.response.data.message;
+          });
+        } else{
+          answer.innerHTML = value.message
+        }
+      } else{
+        answer.innerHTML = checkPhone['message'];
+      }
+    }
   },
 };
 </script>
