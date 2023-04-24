@@ -22,7 +22,7 @@
       <div id="upload" class="d-flex align-items-center justify-content-center border-start-0 rounded-end border col-2 col-sm-1 col-lg-1 col-xl-1 mt-0 mb-0 me-0 ms-0 mt-0 mt-sm-2 mb-sm-2 mt-xl-3 mb-xl-3 "> 
          <div class="">
            <a class="navbar-brand me-0 pt-0 pb-0 w-100 h-100" href="#" @click="onUploadFile">
-            <img src="../Groupomania-Logos/clip3.svg" class="img-fluid" alt="files">
+            <img src="../assets/Groupomania-Logos/clip3.svg" class="img-fluid" alt="files">
           </a>
           <input type="file" name="files" style="display: none" id="files" ref="fileInput" accept="image/*, video/*" @change="onFilePicked"/>
          </div>

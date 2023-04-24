@@ -1,70 +1,57 @@
 <template>
   <div>
     <div id="post_actions" class="mb-sm-1 mb-1 me-sm-5 ms-sm-5 me-5 ms-5 row h-75">
-          <div v-if="replies_shared" id="posts" class="col-7 col-sm-9 ps-0 pe-0 col-lg-9 col-xl-9 offset-1 offset-sm-2 offset-lg-2 offset-xl-2 " >
-      <div :class="'background_read'" v-for="postsdata in replies_shared" :key="postsdata.idComment" :id="'posts'+postsdata.idComment" class="col-12 mt-sm-3 mb-sm-3 mt-2 mb-2 me-xl-0 ms-xl-0">
-         <div id="posts_information" class=" d-inline-flex col-12 mt-sm-3">
+      <div v-if="replies_shared" id="posts" class="col-7 col-sm-9 ps-0 pe-0 col-lg-9 col-xl-9 offset-1 offset-sm-2 offset-lg-2 offset-xl-2 ">
+        <div :class="'background_read'" v-for="postsdata in replies_shared" :key="postsdata.idComment" :id="'posts'+postsdata.idComment" class="col-12 mt-sm-3 mb-sm-3 mt-2 mb-2 me-xl-0 ms-xl-0">
+          <div id="posts_information" class=" d-inline-flex col-12 mt-sm-3">
             <div class="text-start ps-3 mb-0 col-12">
               <p>
-              Post made by {{postsdata.firstname}} {{postsdata.lastname}} on {{commentdate(postsdata.myDate)}}
-              </p> 
+                Post made by {{postsdata.firstname}} {{postsdata.lastname}} on {{commentdate(postsdata.myDate)}}
+              </p>
             </div>
+
+          </div>
           <div id="comments" class="col-12 mt-sm-3">
-          <div id="comments" class="ps-5 col-12">
-              <p class="text-start ">
-              {{postsdata.comment}}
-              </p>  
+            <div id="comments" class="ps-5 col-12">
+              <p class="text-start">
+                {{postsdata.comment}}
+              </p>
             </div>
           </div>
           <div v-if="postsdata.video" id="postsmultimedia" class="col-12 w">
             <video class="img-fluid" controls>
-                <source :src="require('../../../assets/'+postsdata.video)" type="video/mp4">
-              </video> 
+              <source :src="require('../../../assets/'+postsdata.video)" type="video/mp4">
+            </video>
           </div>
           <div v-if="postsdata.image" id="postsimages" class="border col-12">
             <img :src="require('../../../assets/'+postsdata.image)" class="img-fluid" :alt="postsdata.image">
           </div>
-          <div v-if="postsdata.reply" id="replypost" class="border col-12 mt-sm-3">
-            <div id="replyposts" class="border col-12">
-              <p class="text-start ">
-              {{postsdata.reply}}
-              </p>  
-            </div>
-          </div>
           <div v-if="replyresponse" id="comments_actions" class="col-12 d-flex mt-2 mb-2 me-2 align-content-center flex-wrap">
             <div id="comments" class=" col-xl-12">
-
               <a class="navbar-brand me-0 pt-0 pb-0 w-100 h-100" href="#">
                 <img src="../assets/Groupomania-Logos/comment.webp" class="img-fluid" alt="" width="25" height="25">
               </a>
               <a :id="'button'+postsdata.idComment" @click="show(postsdata.idComment)" class="navbar-brand me-0 pt-0 pb-0">
                 {{postsdata.total_replies}} Comments
               </a>
-
-              </div>
+            </div>
           </div>
           <div v-if="replyresponse" id="replies" class=" ps-3 pe-3 col-12 d-flex mt-2 mb-2 me-2">
-            <div :id="'show'+postsdata.idComment" class="d-none col-12" >
-    
-                <div v-for="replys in postsdata.replies" :key="replys.idReply" class="col-12" >
-
-                  <p  v-if="postsdata.idComment == replys.idCommentReply"  class="border text-start col-12">
-                    {{replys.reply}}
+            <div :id="'show'+postsdata.idComment" class="d-none col-12">
+              <div v-for="replys in postsdata.replies" :key="replys.idReply" class="col-12">
+                <p  v-if="postsdata.idComment == replys.idCommentReply"  class="border text-start col-12">
+                  {{replys.reply}}
                 </p>
-
               </div>
             </div>
           </div>
-
-
-      </div> 
-
+        </div>
+      </div>  
     </div>
-     <p class="mt-5 mb-3 alert-danger" id="answer"></p>
-    </div> 
-        
+      <p class="mt-5 mb-3 alert-danger" id="answer"></p>
   </div>
 </template>
+
 
 <script>
 import { error } from 'console';

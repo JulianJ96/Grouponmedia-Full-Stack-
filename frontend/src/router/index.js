@@ -7,8 +7,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 //import store '../auth/store'
-import SignIn from '../views/SignIn'
-import Profile from '../views/Profile'
+import SignIn from '../views/SignIn.vue'
+import Profile from '../views/Profile.vue'
 import store from '../auth/store'
 
 const routes = [
