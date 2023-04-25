@@ -1,7 +1,7 @@
 const fs = require('fs');
-const script = require('../js/script');
+const script = require('../js/script.mjs');
 const sql = require('mysql');
-const User = require('../models/user');
+const User = require('../models/user.mjs');
 const Reply = require('../models/reply');
 
 exports.createReply = async (req, res, next) => {
