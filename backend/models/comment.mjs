@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db.config2.mjs');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.config2.mjs';
 
 const Comment = sequelize.define('Comment', {
   idComment: {
@@ -43,5 +43,6 @@ Comment.associate = function(models){
   });
 };
 
-module.exports = Comment;
+export default Comment;
+
 

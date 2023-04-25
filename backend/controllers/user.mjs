@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import sql from 'mysql';
 import User from '../models/user.mjs';
-import Comment from '../models/comment';
+import Comment from '../models/comment.mjs';
 import Reply from '../models/reply.mjs';
 import { QueryTypes } from 'sequelize';
 import script from '../js/script.mjs';
@@ -62,7 +62,7 @@ export const signup = async (req, res, next) => {
 
 
 /* FUNCTION TO LOGIN A USER!*/
-exports.login = async (req, res, next) => {
+export const login = async (req, res, next) => {
     let user;
     try{
         user = await User.findOne({ where: {email: req.body.email} });

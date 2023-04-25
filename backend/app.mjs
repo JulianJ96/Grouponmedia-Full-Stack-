@@ -8,6 +8,8 @@ import sequelize from './config/db.config2.mjs';
 import cors from 'cors';
 
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -35,7 +37,8 @@ app.use((req, res, next)  =>{
 // Routes
 import userRoutes from './routes/user.mjs';
 import replyRoutes from './routes/reply.mjs';
-import commentRoutes from './routes/comment.js';
+import commentRoutes from './routes/comment.mjs';
+import { fileURLToPath } from 'url';
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));

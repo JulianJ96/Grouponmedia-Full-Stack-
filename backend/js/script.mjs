@@ -88,6 +88,6 @@ const checkPassword = (inputtxt) => {
   return arr;
 };
 
-export { checkPhoneNumber, checkPassword, modifyArray, exitsUser };
+export default { checkPhoneNumber, checkPassword, modifyArray, exitsUser };
 
 
