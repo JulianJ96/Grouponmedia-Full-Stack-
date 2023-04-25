@@ -1,24 +1,24 @@
-const express = require('express');
+import express from 'express';
+import mongoose from 'mongoose';
+import path from 'path';
+import dotenv from 'dotenv';
+import mysql from 'mysql';
+import sql from 'mssql';
+import sequelize from './config/db.config2';
+import cors from 'cors';
+
 const app = express();
-const mongoose = require('mongoose');
-const path = require('path');
-const dotenv = require('dotenv');
-require('dotenv').config();
-const mysql = require('mysql');
-const sql = require('mssql');
-const sequelize = require('./config/db.config2');
-const { Console } = require('console');
-const cors = require('cors');
 
+dotenv.config();
 
-//mongoose.connect('mongodb+srv://julianj96:otakuJj9672$@jucluster0.2g5jb2b.mongodb.net/?retryWrites=true&w=majority')
-
+// Connect to Sequelize database
 sequelize.authenticate().then(() => {
     console.log('Connection successful!');
 }) .catch((err) => {
     console.log('error connecting to database!')
 });
 
+// Sync Sequelize models
 try{
     sequelize.sync({force:false})
 } catch(error){
@@ -32,27 +32,19 @@ app.use((req, res, next)  =>{
     next();
 });
 
-
-
-
-
-// Routes Const
-const userRoutes = require('./routes/user');
-const replyRoutes = require('./routes/reply');
-const commentRoutes = require('./routes/comment');
-
-// Uses
+// Routes
+import userRoutes from './routes/user.mjs';
+import replyRoutes from './routes/reply.js';
+import commentRoutes from './routes/comment.js';
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use('/', express.static(path.join(__dirname, 'static')));
 app.use('', express.static(path.join(__dirname, 'images')));
-
-
-// Routes
 app.use(cors({ origin: 'http://localhost:5173'}));
 app.use('/api/auth', userRoutes);
 app.use('/api/reply', replyRoutes);
-app.use('/api/comment', commentRoutes); 
+app.use('/api/comment', commentRoutes);
 
-module.exports = app;
+export default app;
+

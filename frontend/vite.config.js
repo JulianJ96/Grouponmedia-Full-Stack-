@@ -1,11 +1,13 @@
-import { fileURLToPath, URL } from 'node:url'
+import { fileURLToPath, URL } from 'node:url';
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import commonjs from 'rollup-plugin-commonjs'; // <-- import rollup-plugin-commonjs
 
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    commonjs(), // <-- add commonjs to the plugins array
+  ],
   resolve: {
     alias: {
       vue: 'vue/dist/vue.esm-bundler.js',
@@ -15,5 +17,9 @@ export default defineConfig({
   esbuild: {
     cjsInterop: true
   }
-})
+});
+
+
+
+
 

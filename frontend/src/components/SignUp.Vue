@@ -56,7 +56,7 @@
 import { mapState } from 'vuex/dist/vuex.esm-bundler.js';
 
 
-import {checkPhoneNumber, checkPassword, modifyArray, exitsUser } from '../../../backend/js/script';
+import { checkPhoneNumber, checkPassword, modifyArray, exitsUser } from '../../../backend/js/script.mjs';
 // import axios from "axios";
 export default {
   // components: { VueTelInput },
