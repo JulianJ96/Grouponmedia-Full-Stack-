@@ -4,7 +4,7 @@ import path from 'path';
 import dotenv from 'dotenv';
 import mysql from 'mysql';
 import sql from 'mssql';
-import sequelize from './config/db.config2';
+import sequelize from './config/db.config2.mjs';
 import cors from 'cors';
 
 const app = express();
@@ -34,7 +34,7 @@ app.use((req, res, next)  =>{
 
 // Routes
 import userRoutes from './routes/user.mjs';
-import replyRoutes from './routes/reply.js';
+import replyRoutes from './routes/reply.mjs';
 import commentRoutes from './routes/comment.js';
 
 app.use(express.json());

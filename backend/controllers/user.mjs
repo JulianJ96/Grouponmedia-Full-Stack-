@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import sql from 'mysql';
 import User from '../models/user.mjs';
 import Comment from '../models/comment';
-import Reply from '../models/reply';
+import Reply from '../models/reply.mjs';
 import { QueryTypes } from 'sequelize';
 import script from '../js/script.mjs';
 import { request } from 'express';

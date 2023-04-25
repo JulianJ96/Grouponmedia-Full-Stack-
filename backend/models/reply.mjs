@@ -1,0 +1,45 @@
+import { Sequelize, DataTypes } from 'sequelize';
+import sequelize from '../config/db.config2.mjs';
+import Comment from '../models/comment.mjs';
+
+const Reply = sequelize.define('Reply', {
+  idReply: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    allowNull: false,
+    primaryKey: true,
+  },
+  idCommentReply: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  idUser: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  reply: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  image: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  myDate: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+  },
+  createdAt: DataTypes.DATE,
+  updatedAt: DataTypes.DATE,
+});
+
+Reply.associate = function(models){
+  Reply.belongsTo(models.Comment, {
+    foreignKey: 'idCommentReply',
+    targetKey: 'idComment'
+  });
+};
+
+export default Reply;
+
+  

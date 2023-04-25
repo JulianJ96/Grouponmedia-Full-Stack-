@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/token');
-const multer = require('../middleware/multer-config');
+const auth = require('../middleware/token.mjs');
+const multer = require('../middleware/multer-config.mjs');
 const commentCtrl = require('../controllers/comment');
 
 router.get('/:id/', auth, commentCtrl.getAllComment);

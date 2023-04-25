@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db.config2');
+const sequelize = require('../config/db.config2.mjs');
 
 const Comment = sequelize.define('Comment', {
   idComment: {

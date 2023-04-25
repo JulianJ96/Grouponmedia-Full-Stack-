@@ -1,12 +1,12 @@
 
 const Comment =  require('../models/comment');
-const Reply =  require('../models/reply');
+const Reply =  require('../models/reply.mjs');
 const User =  require('../models/user.mjs');
 const { QueryTypes } = require('sequelize');
 const fs = require('fs');
 const script =  require('../js/script.mjs');
 const sql = require('mysql');
-const sequelize = require('../config/db.config2');
+const sequelize = require('../config/db.config2.mjs');
 let arrayImages = [];
 let arrayVideos = [];
 
