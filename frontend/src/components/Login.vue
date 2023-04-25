@@ -20,7 +20,7 @@
           <button class="w-100 btn btn-lg btn-primary" type="submit"  @click="SignUpUser">Sign Up</button>
         </div>
         <p class="mt-5 mb-3 alert-danger" id="response" ></p>
-        <p class="mt-5 mb-3 text-muted">&copy; 2020–2021</p>
+        <p class="mt-5 mb-3 text-muted">&copy; 2023-2024</p>
       </form>
     </main>
   </div>
@@ -29,7 +29,8 @@
 <script>
 //import axios from "axios";
 //import { AUTH_REQUEST } from "../auth/actions/auth";
-import { mapState } from "vuex";
+import { mapState } from 'vuex/dist/vuex.esm-bundler.js';
+
 
 export default {
   name: 'SaveUser',

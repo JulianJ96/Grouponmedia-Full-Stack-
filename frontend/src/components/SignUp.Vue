@@ -53,7 +53,11 @@
 <script>
 // import { VueTelInput } from 'vue3-tel-input
 // import 'vue3-tel-input/dist/vue3-tel-input.css;
-import { mapstate } from 'vuex';
+import { mapState } from 'vuex/dist/vuex.esm-bundler.js';
+
+
+import {checkPhoneNumber, checkPassword, modifyArray, exitsUser } from '../../../backend/js/script';
+// import axios from "axios";
 export default {
   // components: { VueTelInput },
   name: "SaveUser",
@@ -74,7 +78,8 @@ export default {
     msg: String
   },
   computed: {
-    ...mapstate({
+    ...mapState({
+      namespaced: true,
       user: (state) => state.user
     })
   },

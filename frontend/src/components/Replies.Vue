@@ -56,7 +56,7 @@
 <script>
 import { error } from 'console';
 //import { store } from '..auth/store.js';
-import { mapstate } from 'vuex';
+import { mapState } from 'vuex/dist/vuex.esm-bundler.js';
 // import axios from 'axios';
 
 export default {
@@ -82,7 +82,7 @@ export default {
     },
   },
   computed: {
-    ...mapstate({
+    ...mapState({
       user: (state) => state.user
     })
   },

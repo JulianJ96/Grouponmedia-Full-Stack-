@@ -46,7 +46,8 @@
 import { defineComponent } from 'vue'
 import { VueTelInput } from 'vue3-tel-input'
 import 'vue3-tel-input/dist/vue3-tel-input.css'
-import { mapState } from 'vuex'
+import { mapState } from 'vuex/dist/vuex.esm-bundler.js';
+
 import axios from 'axios'
 
 export default defineComponent({

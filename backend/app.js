@@ -42,6 +42,7 @@ const replyRoutes = require('./routes/reply');
 const commentRoutes = require('./routes/comment');
 
 // Uses
+
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use('/', express.static(path.join(__dirname, 'static')));
@@ -49,7 +50,7 @@ app.use('', express.static(path.join(__dirname, 'images')));
 
 
 // Routes
-
+app.use(cors({ origin: 'http://localhost:5173'}));
 app.use('/api/auth', userRoutes);
 app.use('/api/reply', replyRoutes);
 app.use('/api/comment', commentRoutes); 
