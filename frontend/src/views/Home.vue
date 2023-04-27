@@ -109,30 +109,34 @@ export default {
       return datestring;
       },
     dataPosts(){
-    
-      let url = "/comment/"+this.user.id;
-        
-        this.$http.get(url,{headers: {'Authorization': this.user.token},params:{'userId': this.user.id}}).then(response => {
-          let check = typeof(JSON.parse(JSON.stringify(response.data.comments)));
-          if(check!= 'Array'){
-          this.posts = JSON.parse(JSON.stringify(response.data.comments));
-          this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
-           let check2 = typeof(JSON.parse(JSON.stringify(response.data.user)));
-             if(check2 != 'Array'){
-            this.user_tag = JSON.parse(JSON.stringify(response.data.user));
-            this.tags = JSON.parse(JSON.stringify(response.data.user));
-             }
-          }else{ 
-          this.posts = JSON.stringify(response.data.comments);
-          this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
-          this.user_tag = JSON.parse(JSON.stringify(response.data.user));
-          this.tags = JSON.parse(JSON.stringify(response.data.user));
-          }
-          })
-          .catch(error => {
-            console.error(error);
-          });
-    },
+    let url = "/comment/"+this.user.id;
+    this.$http.get(url,{
+    headers: {'Authorization': 'Bearer ' + this.user.token},
+    params: {'userId': this.user.id}
+    })
+    .then(response => {
+    let check = typeof(JSON.parse(JSON.stringify(response.data.comments)));
+    if(check!= 'Array'){
+      this.posts = JSON.parse(JSON.stringify(response.data.comments));
+      this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
+      let check2 = typeof(JSON.parse(JSON.stringify(response.data.user)));
+      if(check2 != 'Array'){
+        this.user_tag = JSON.parse(JSON.stringify(response.data.user));
+        this.tags = JSON.parse(JSON.stringify(response.data.user));
+      }
+      }else{ 
+      this.posts = JSON.stringify(response.data.comments);
+      this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
+      this.user_tag = JSON.parse(JSON.stringify(response.data.user));
+      this.tags = JSON.parse(JSON.stringify(response.data.user));
+    }
+  })
+    .catch(error => {
+      console.error(error);
+      alert('Failed to fetch posts. Please try again later.');
+    });
+},
+
     addPost (user, post){
       let url = "/auth/add";
         let data1 = {
