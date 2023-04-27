@@ -2,7 +2,7 @@
 
 
 // Function to modify array of likes or dislikes
-const modifyArray = (usersArray, userId, option) => {
+export function modifyArray (usersArray, userId, option){
   if (usersArray.length !== 0) {
     for (let i = 0; i < usersArray.length; i++) {
       if (option === 'Delete') {
@@ -24,18 +24,18 @@ const modifyArray = (usersArray, userId, option) => {
 };
 
 // Function to check if the user that is liking or disliking is in the array.
-const exitsUser = (usersArray, userId) => {
+export function exitsUser (usersArray, userId){
   if (usersArray.length !== 0) {
     for (let i = 0; i < usersArray.length; i++) {
       if (usersArray[i] === userId) {
         return true;
       }
     }
-    return false;
+    return false; // or true
   }
 }
 
-const checkPhoneNumber = (inputtxt) => {
+export function checkPhoneNumber(inputtxt){
   const phoneno = /^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$/;
   const arr = { conditional: false, message: "" };
   const coincidence = inputtxt.match(phoneno);
@@ -49,16 +49,16 @@ const checkPhoneNumber = (inputtxt) => {
   }
 };
 
-const checkPassword = (inputtxt) => {
+export function checkPassword(inputtxt) {
   if (!inputtxt) {
     return { conditional: false, message: "No password provided" };
   }
   // Password more than 6 and less than 20 characters
   const passw = /^(.{6,20})/g;
   // Password must contain a number
-  const passw1 = /^(?=.\d)/g;
+  const passw1 = /^(?=.*\d)/g;
   // Password must contain at least 1 lower letter
-  const passw2 = /^(?=.[a-z])/g;
+  const passw2 = /^(?=.*[a-z])/g;
   // Password must contain at least 1 capital letter
   const passw3 = /^(?=.*[A-Z])/g;
 
@@ -87,6 +87,7 @@ const checkPassword = (inputtxt) => {
   }
   return arr;
 };
+
 
 export default { checkPhoneNumber, checkPassword, modifyArray, exitsUser };
 

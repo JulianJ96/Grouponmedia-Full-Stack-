@@ -21,16 +21,13 @@
           <label for="validationlast"> Last Name</label>
         </div>
         <div class="form-floating">
-          <input type="text" id="validationphone" placeholder="1111111111" v-model="formdata.phone" required>
-          <label for="validationphone">Phone Number</label>
+          <input type="text" id="validationphone" placeholder="phone number" v-model="formdata.phone" required>
         </div>
         <div class="form-floating">
           <input type="password" id="validationpassword" placeholder="password" v-model="formdata.password" required>
-          <label for="validationpassword">password</label>
         </div>
         <div class="form-floating">
           <input type="password" id="validationpassword2" placeholder="password confirmation" v-model="formdata.password_confirmation" required>
-          <label for="validationpassword2">Password confirmation</label>
         </div>
         <!--
           <div class="checkbox mb-3">
@@ -44,7 +41,7 @@
         </div>
 
         <p class="mt-5 mb-3 alert-danger" id="answer"></p>
-        <p class="mt-5 mb-3 text-muted">&copy;2 023-2024</p> 
+        <p class="mt-5 mb-3 text-muted">&copy;2023-2024</p> 
       </form>
     </main>
   </div>
@@ -56,7 +53,12 @@
 import { mapState } from 'vuex/dist/vuex.esm-bundler.js';
 
 
-import { checkPhoneNumber, checkPassword, modifyArray, exitsUser } from '../../../backend/js/script.mjs';
+import { checkPhoneNumber, checkPassword } from '../../../backend/js/script.mjs';
+import { modifyArray, exitsUser } from '../../../backend/js/script.mjs';
+
+
+
+
 // import axios from "axios";
 export default {
   // components: { VueTelInput },
@@ -85,8 +87,8 @@ export default {
   },
   methods: {
     submit(){
-      let checkPass = script.checkPassword(this.formdata.password);
-      let checkPhone = script.checkPhoneNumber(this.formdata.phone);
+      let checkPass = checkPassword(this.formdata.password);
+      let checkPhone = checkPhoneNumber(this.formdata.phone);
       let answer = document.getElementById("answer");
       if(this.formdata.firstname === "" && this.formdata.lastname === ""&&this.formdata.phone === "" && this.formdata.password === "" && this.formdata.password_confirmation === "" && this.formdata.username ===""){
         this.formdata.password = ""
@@ -109,7 +111,7 @@ export default {
           phonenumber: this.formdata.phone,
         }
 
-        const value = script.checkPassword(this.formdata.password);
+        const value = checkPassword(this.formdata.password);
         if(checkPass['conditional'] && checkPhone['conditional']){
           this.$http.post(url,data1).then(response => {
             answer.innerHTML = response.data;
@@ -175,7 +177,7 @@ body {
   font-weight: 400;
 }
 .form-signin .form-floating:focus-within {
-  z-index: 2;
+  z-index: 1;
 }
 .form-signin input[type="email"] {
   margin-bottom: -1px;

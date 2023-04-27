@@ -6,6 +6,9 @@ import mysql from 'mysql';
 import sql from 'mssql';
 import sequelize from './config/db.config2.mjs';
 import cors from 'cors';
+import XMLHttpRequest from 'xhr2';
+
+
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -13,12 +16,7 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
-// Connect to Sequelize database
-sequelize.authenticate().then(() => {
-    console.log('Connection successful!');
-}) .catch((err) => {
-    console.log('error connecting to database!')
-});
+
 
 // Sync Sequelize models
 try{

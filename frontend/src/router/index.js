@@ -2,8 +2,6 @@
 //import SignIn from '../views/SignIn.vue
 //import Vue from './../App.vue'
 
-
-
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 //import store '../auth/store'
@@ -66,4 +64,7 @@ router.beforeEach((to, from, next) => {
   }
 });
 
-export default router
+export default router;
+
+
+

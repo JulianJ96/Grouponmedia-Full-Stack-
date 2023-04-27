@@ -10,3 +10,7 @@ router.get('/user/:id', getuser);
 router.delete('/deleteuser/:id', deleteuser);
 
 export default router;
+
+
+
+

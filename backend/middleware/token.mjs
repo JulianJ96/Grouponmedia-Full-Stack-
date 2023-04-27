@@ -17,8 +17,5 @@ export default (req, res, next) => {
     res.status(401).json({
       error: new Error('Invalid request!')
     });
-    res.status(500).json({
-      error: new Error('Invalid request!')
-    });
   }
 };

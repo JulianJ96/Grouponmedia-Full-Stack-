@@ -120,37 +120,69 @@ export const createComment = async (req, res, next) => {
   }
 }
 
+
 export const getOneComment = async (req, res, next) => {
   try {
-    const getcomment = await sequelize.query('(SELECT c.idComment,c.idUserComment,c.comment,c.image,c.video,c.myDate,u.email,u.lastname,u.firstname,r.total_replies FROM Comments c LEFT JOIN Users u on c.idUserComment = u.idUser LEFT JOIN (SELECT COUNT(r.idReply) AS total_replies,idCommentReply FROM Replies r GROUP BY r.idCommentReply) r on r.idCommentReply = c.idComment WHERE c.idComment = $idComment ) ORDER BY c.myDate DESC ',
-      {
-        bind: { idComment: req.params.idComment },
-        type: QueryTypes.SELECT
-      });
-    const getallreplys = await sequelize.query('SELECT r.idReply,r.idCommentReply,r.idUser,r.reply,r.myDate,u.email,u.lastname,u.firstname FROM Replies r INNER JOIN Users u on r.idUser = u.idUser WHERE r.idCommentReply = $idComment',
-      {
-        bind: { idComment: req.params.idComment },
-        type: QueryTypes.SELECT
-      });
-    const comments = JSON.parse(JSON.stringify(getcomment))
-    const replys = JSON.parse(JSON.stringify(getallreplys))
-    let comments2 = JSON.parse(JSON.stringify(getcomment))
-    let replys2 = JSON.parse(JSON.stringify(getallreplys))
-    for (let i = 0; i < comments2.length; i++) {
-      for (let j = 0; j < replys2.length; j++) {
-        if (comments2[i].idComment == replys2[j].idCommentReply) {
-          if (comments2[i].replies == undefined) {
-            comments2[i].replies = [];
-            comments2[i].replies.push(replys2[j]);
-          } else {
-            comments2[i].replies.push(replys2[j])
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      throw 'Authorization header missing';
+    }
+    const token = authHeader.split(' ')[1];
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decodedToken.userId;
+    req.auth = { userId };
+    if (req.body.userId && req.body.userId !== userId) {
+      throw 'Invalid user ID';
+    } else {
+      // continue with the function code
+      const getComment = await sequelize.query(`
+      SELECT c.idComment, c.idUserComment, c.comment, c.image, c.video, c.myDate, u.email, u.lastname, u.firstname, r.total_replies 
+      FROM Comments c 
+      LEFT JOIN Users u ON c.idUserComment = u.idUser 
+      LEFT JOIN (
+        SELECT COUNT(r.idReply) AS total_replies, idCommentReply 
+        FROM Replies r 
+        GROUP BY r.idCommentReply
+      ) r ON r.idCommentReply = c.idComment 
+      WHERE c.idComment = :idComment 
+      ORDER BY c.myDate DESC
+    `, {
+      replacements: { idComment: req.params.idComment },
+      type: QueryTypes.SELECT
+    });
+    
+    const getallreplys = await sequelize.query(`
+    SELECT r.idReply, r.idCommentReply, r.idUser, r.reply, r.myDate, u.email, u.lastname, u.firstname 
+    FROM Replies r 
+    INNER JOIN Users u ON r.idUser = u.idUser 
+    WHERE r.idCommentReply = :idComment
+  `, {
+    replacements: { idComment: req.params.idComment },
+    type: QueryTypes.SELECT
+  });
+
+      const comments = JSON.parse(JSON.stringify(getcomment))
+      const replys = JSON.parse(JSON.stringify(getallreplys))
+      let comments2 = JSON.parse(JSON.stringify(getcomment))
+      let replys2 = JSON.parse(JSON.stringify(getallreplys))
+      for (let i = 0; i < comments2.length; i++) {
+        for (let j = 0; j < replys2.length; j++) {
+          if (comments2[i].idComment == replys2[j].idCommentReply) {
+            if (comments2[i].replies == undefined) {
+              comments2[i].replies = [];
+              comments2[i].replies.push(replys2[j]);
+            } else {
+              comments2[i].replies.push(replys2[j])
+            }
           }
         }
+        const data = {comments:comments2,reply:JSON.parse(JSON.stringify(replys2))}
+        res.send(data)
       }
-      const data = {comments:comments2,reply:JSON.parse(JSON.stringify(replys2))}
-      res.send(data)
     }
   } catch (error) {
-    res.status(400).send({message: "Not user found"});
+    res.status(401).json({
+      error: new Error('Invalid request!')
+    });
   }
 };
