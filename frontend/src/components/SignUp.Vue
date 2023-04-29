@@ -48,20 +48,10 @@
 </template>
 
 <script>
-// import { VueTelInput } from 'vue3-tel-input
-// import 'vue3-tel-input/dist/vue3-tel-input.css;
 import { mapState } from 'vuex/dist/vuex.esm-bundler.js';
-
-
 import { checkPhoneNumber, checkPassword } from '../../../backend/js/script.mjs';
 import { modifyArray, exitsUser } from '../../../backend/js/script.mjs';
-
-
-
-
-// import axios from "axios";
 export default {
-  // components: { VueTelInput },
   name: "SaveUser",
   data() {
     return {
@@ -73,7 +63,7 @@ export default {
         password_confirmation: "",
         phone: "",
       },
-        answer: ""
+      answer: ""
     };
   },
   props: {
@@ -86,7 +76,7 @@ export default {
     })
   },
   methods: {
-    submit(){
+    submit() {
       let checkPass = checkPassword(this.formdata.password);
       let checkPhone = checkPhoneNumber(this.formdata.phone);
       let answer = document.getElementById("answer");
@@ -94,14 +84,11 @@ export default {
         this.formdata.password = ""
         this.formdata.password_confirmation = ""
         answer.innerHTML = "Please enter all fields";
-      }
-      else if (this.formdata.password === "" && this.formdata.password_confirmation === "" && this.formdata.username !=""){
+      } else if (this.formdata.password === "" && this.formdata.password_confirmation === "" && this.formdata.username !=""){
         answer.innerHTML = "Please enter passwords";
-      }
-      else if(this.formdata.password !== this.formdata.password_confirmation){
+      } else if(this.formdata.password !== this.formdata.password_confirmation){
         answer.innerHTML = "Please both passwords must be equal";
-      }
-      else if (this.formdata.password === this.formdata.password_confirmation && checkPass['conditional'] && checkPhone['conditonal'] && this.formdata.username !="" && this.formdata.lastname !=""){
+      } else if (this.formdata.password === this.formdata.password_confirmation && checkPass['conditional'] && checkPhone['conditonal'] && this.formdata.username !="" && this.formdata.lastname !=""){
         let url = "http://localhost:3000/api/auth/signup";
         let data1 = {
           email: this.formdata.username,
@@ -110,14 +97,13 @@ export default {
           lastname: this.formdata.lastname.toUpperCase(),
           phonenumber: this.formdata.phone,
         }
-
         const value = checkPassword(this.formdata.password);
         if(checkPass['conditional'] && checkPhone['conditional']){
           this.$http.post(url,data1).then(response => {
             answer.innerHTML = response.data;
             this.$store.commit('login', response);
             if(response.status === 201){
-              this.$router.push('/dashboard')
+              this.$router.push('/dashboard'); // Redirect to dashboard upon successful sign up
             }
           })
           .catch(error => {
@@ -133,6 +119,7 @@ export default {
   },
 };
 </script>
+
 
 
 
