@@ -98,13 +98,15 @@ export default {
           phonenumber: this.formdata.phone,
         }
         const value = checkPassword(this.formdata.password);
-        if(checkPass['conditional'] && checkPhone['conditional']){
-          this.$http.post(url,data1).then(response => {
+        if (checkPass['conditional'] && checkPhone['conditional']) {
+          this.$http.post(url, data1)
+            .then(response => {
             answer.innerHTML = response.data;
             this.$store.commit('login', response);
-            if(response.status === 201){
-              this.$router.push('/dashboard'); // Redirect to dashboard upon successful sign up
-            }
+            if (response.status === 201) {
+            // Redirect to dashboard upon successful sign up
+          this.$router.push({ path: '/dashboard' });
+              }
           })
           .catch(error => {
             answer.innerHTML = error.response.data.message;

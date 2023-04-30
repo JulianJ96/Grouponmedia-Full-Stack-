@@ -106,7 +106,7 @@ export default {
       return datestring;
       },
     dataPosts(){
-      let url = "/api/comment/" + this.user.id;
+      let url = "/comment/" + this.user.id;
       this.$http.get(url,{
         headers: {'Authorization': 'Bearer ' + this.user.token},
         params: {'userId': this.user.id}
@@ -134,7 +134,7 @@ export default {
       });
     },
     addPost (user, post){
-      let url = "/api/auth/add";
+      let url = "/auth/add";
       let data1 = {
         userId: user,
         postiD: post,
