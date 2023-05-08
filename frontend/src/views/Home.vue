@@ -11,7 +11,7 @@
       <div id="comment" class=" border-primary col-6 col-sm-8 ps-0 pe-0 col-lg-8 col-xl-8 mt-0 mb-0 me-0 ms-0 mt-0 mt-sm-2 mb-sm-2 mt-xl-3 mb-xl-3">
         <input type="text" class=" form-control w-100 h-100" id="comment1" placeholder="WRITE YOUR POST" v-model="comment" required>
       </div>
-       <div id="post" @click="post"  class="border-start-0 rounded-end d-flex align-items-center justify-content-center border col-2 col-sm-1 col-lg-1 col-xl-1 mt-0 mb-0 me-0 ms-0 mt-0 mt-sm-2 mb-sm-2 mt-xl-3 mb-xl-3 "> 
+       <div id="post" v-on:click="post"  class="border-start-0 rounded-end d-flex align-items-center justify-content-center border col-2 col-sm-1 col-lg-1 col-xl-1 mt-0 mb-0 me-0 ms-0 mt-0 mt-sm-2 mb-sm-2 mt-xl-3 mb-xl-3 "> 
          <div class="border-primary">
            <a class="navbar-brand me-0 pt-0 pb-0 link-light" :id="'homepost'" href="#">
             Post
@@ -48,6 +48,7 @@
 <script>
 import All from  '../components/Posts.vue'
 import { mapState } from "vuex";
+import axios from 'axios';
 export default {
   name: 'Dashboard',
   components: {
@@ -106,26 +107,30 @@ export default {
       return datestring;
       },
     dataPosts(){
-      let url = "/comment/" + this.user.id;
-      this.$http.get(url,{
-        headers: {'Authorization': 'Bearer ' + this.user.token},
-        params: {'userId': this.user.id}
-      })
-      .then(response => {
-        let check = typeof(JSON.parse(JSON.stringify(response.data.comments)));
-        if(check!= 'Array'){
-          this.posts = JSON.parse(JSON.stringify(response.data.comments));
-          this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
-          let check2 = typeof(JSON.parse(JSON.stringify(response.data.user)));
-          if(check2 != 'Array'){
-            this.user_tag = JSON.parse(JSON.stringify(response.data.user));
-            this.tags = JSON.parse(JSON.stringify(response.data.user));
-          }
-        } else { 
-          this.posts = JSON.stringify(response.data.comments);
-          this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
-          this.user_tag = JSON.parse(JSON.stringify(response.data.user));
-          this.tags = JSON.parse(JSON.stringify(response.data.user));
+  let url = "/comment/" + this.user.id;
+ axios.get(url, {
+  headers: {
+    'Authorization': `Bearer ${this.user.token}`,
+    'userId': this.user.id
+  },
+  withCredentials: true
+})
+
+  .then(response => {
+    let check = typeof(JSON.parse(JSON.stringify(response.data.comments)));
+    if(check!= 'Array'){
+      this.posts = JSON.parse(JSON.stringify(response.data.comments));
+      this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
+      let check2 = typeof(JSON.parse(JSON.stringify(response.data.user)));
+      if(check2 != 'Array'){
+        this.user_tag = JSON.parse(JSON.stringify(response.data.user));
+        this.tags = JSON.parse(JSON.stringify(response.data.user));
+      }
+    } else { 
+      this.posts = JSON.stringify(response.data.comments);
+      this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
+      this.user_tag = JSON.parse(JSON.stringify(response.data.user));
+      this.tags = JSON.parse(JSON.stringify(response.data.user));
         }
       })
       .catch(error => {
@@ -139,7 +144,11 @@ export default {
         userId: user,
         postiD: post,
       }
-      this.$http.post(url, data1, {headers: {'Authorization': this.user.token},params:{'userId': this.user.user}}).then(response => {
+      axios.post(url, data1, {
+        headers: {'Authorization': `Bearer ${this.user.token}`},
+        params: {'userId': this.user.user}
+      })
+      .then(response => {
         if(response.status == 201){
           for ( var i = 0 ; i < this.posts.length ; i++){
             if(this.posts[i].idComment == post){
@@ -153,7 +162,7 @@ export default {
       });
     }
   },
-    post() {
+ post() {
   const comment = document.getElementById("comment1").value;
   if (comment != "") {
     let url = "/comment";
@@ -170,7 +179,8 @@ export default {
       method: "POST",
       body: formData,
       headers: {
-        Authorization: this.user.token,
+        Authorization: `Bearer ${this.user.token}`,
+        'Content-Type': 'application/json'
       },
       params: {
         userId: this.user.id,
@@ -206,6 +216,7 @@ export default {
   }
 },
 
+
 show(idComment) {
   var display = document.getElementById("show" + idComment);
   if (display.classList.contains("d-none")) {
@@ -228,28 +239,19 @@ reply(idComment) {
     };
     const formData = new FormData();
     formData.append("body", JSON.stringify(data1));
-    fetch(url, {
-      method: "POST",
-      body: formData,
+    this.$http.post(url, formData, {
       headers: {
-        Authorization: this.user.token,
+        Authorization: `Bearer ${this.user.token}`
       },
       params: {
-        userId: this.user.user,
-      },
+        userId: this.user.user
+      }
     })
       .then((response) => {
-        if (response.ok) {
-          return response.text();
-        } else {
-          throw new Error("Something went wrong");
-        }
-      })
-      .then((data) => {
         setTimeout(() => {
           this.clear();
         }, 1000);
-        document.getElementById("answer").innerHTML = data;
+        document.getElementById("answer").innerHTML = response.data;
       })
       .catch((error) => {
         console.error(error);
@@ -258,6 +260,7 @@ reply(idComment) {
     document.getElementById(idComment).placeholder = "Please write something down to post";
   }
 },
+
 
 onUploadFile() {
   this.$refs.fileInput.click();

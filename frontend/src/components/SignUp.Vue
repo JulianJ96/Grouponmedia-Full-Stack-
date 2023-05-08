@@ -1,43 +1,42 @@
 <template>
   <div class="hello">
-    <h1> {{ msg }} </h1>
+    <h1>{{ msg }}</h1>
 
-    <main class= "form-signin">
+    <main class="form-signin">
       <form>
-        <img class="mb-4" src= '../assets/Groupomania-Logos/icon.png' alt="" width="72" height="72">
+        <img class="mb-4" src="../assets/Groupomania-Logos/icon.png" alt="" width="72" height="72">
 
-        <h1 class="h3 mb-3 fw-normal"> Please Sign In!</h1>
+        <h1 class="h3 mb-3 fw-normal">Please Sign In!</h1>
 
         <div class="form-floating">
-          <input oninvalid= "this.setCustomValidity('Please fill out your email')" type= "email" class= "form-control" id= "validationDefaultUsername" placeholder="name@example.com" v-model="formdata.username" required>
-          <label for="validationDefaultUsername"> Email Address</label>
+          <input oninvalid="this.setCustomValidity('Please fill out your last name')" type="text" class="form-control text-uppercase" id="validationlast" placeholder="Yeager" v-model="formdata.lastname" required>
+          <label for="validationlast">Last Name</label>
         </div>
+
         <div class="form-floating">
-          <input oninvalid= "this.setCustomValidity('Please fill out your first name')" type= "text" class= "form-control text-uppercase" id= "validationfirst" placeholder="Eren" v-model="formdata.firstname" required>
-          <label for="validationfirst"> First Name</label>
+          <input oninvalid="this.setCustomValidity('Please fill out your first name')" type="text" class="form-control text-uppercase" id="validationfirst" placeholder="Eren" v-model="formdata.firstname" required>
+          <label for="validationfirst">First Name</label>
         </div>
-         <div class="form-floating">
-          <input oninvalid= "this.setCustomValidity('Please fill out your last name')" type= "text" class= "form-control text-uppercase" id= "validationlast" placeholder="Yeager" v-model="formdata.lastname" required>
-          <label for="validationlast"> Last Name</label>
+
+        <div class="form-floating">
+          <input oninvalid="this.setCustomValidity('Please fill out your email')" type="email" class="form-control" id="validationDefaultUsername" placeholder="name@example.com" v-model="formdata.username" required>
+          <label for="validationDefaultUsername">Email Address</label>
         </div>
+
         <div class="form-floating">
           <input type="text" id="validationphone" placeholder="phone number" v-model="formdata.phone" required>
         </div>
+
         <div class="form-floating">
           <input type="password" id="validationpassword" placeholder="password" v-model="formdata.password" required>
         </div>
+
         <div class="form-floating">
           <input type="password" id="validationpassword2" placeholder="password confirmation" v-model="formdata.password_confirmation" required>
         </div>
-        <!--
-          <div class="checkbox mb-3">
-            <label>
-              <input type= "checkbox" value= "remember-me"> Remember me
-            </label>
-          </div>
-        -->
+
         <div class="checkbox mb-3 mt-4">
-          <button class="w-100 btn btn-lg btn-primary" type="button" @click="submit"> Sign Up</button>
+          <button class="w-100 btn btn-lg btn-primary" type="button" v-on:click="SignUpUser">Sign Up</button>
         </div>
 
         <p class="mt-5 mb-3 alert-danger" id="answer"></p>
@@ -47,10 +46,12 @@
   </div>
 </template>
 
+
 <script>
 import { mapState } from 'vuex/dist/vuex.esm-bundler.js';
 import { checkPhoneNumber, checkPassword } from '../../../backend/js/script.mjs';
 import { modifyArray, exitsUser } from '../../../backend/js/script.mjs';
+import axios from 'axios';
 export default {
   name: "SaveUser",
   data() {
@@ -76,21 +77,21 @@ export default {
     })
   },
   methods: {
-    submit() {
+    SignUpUser() {
       let checkPass = checkPassword(this.formdata.password);
       let checkPhone = checkPhoneNumber(this.formdata.phone);
       let answer = document.getElementById("answer");
-      if(this.formdata.firstname === "" && this.formdata.lastname === ""&&this.formdata.phone === "" && this.formdata.password === "" && this.formdata.password_confirmation === "" && this.formdata.username ===""){
+      if (this.formdata.firstname === "" && this.formdata.lastname === "" && this.formdata.phone === "" && this.formdata.password === "" && this.formdata.password_confirmation === "" && this.formdata.username === "") {
         this.formdata.password = ""
         this.formdata.password_confirmation = ""
         answer.innerHTML = "Please enter all fields";
-      } else if (this.formdata.password === "" && this.formdata.password_confirmation === "" && this.formdata.username !=""){
+      } else if (this.formdata.password === "" && this.formdata.password_confirmation === "" && this.formdata.username != "") {
         answer.innerHTML = "Please enter passwords";
-      } else if(this.formdata.password !== this.formdata.password_confirmation){
+      } else if (this.formdata.password !== this.formdata.password_confirmation) {
         answer.innerHTML = "Please both passwords must be equal";
-      } else if (this.formdata.password === this.formdata.password_confirmation && checkPass['conditional'] && checkPhone['conditonal'] && this.formdata.username !="" && this.formdata.lastname !=""){
+      } else if (this.formdata.password === this.formdata.password_confirmation && checkPass['conditional'] && checkPhone['conditional'] && this.formdata.username != "" && this.formdata.lastname != "") {
         let url = "http://localhost:3000/api/auth/signup";
-        let data1 = {
+        let data = {
           email: this.formdata.username,
           password: this.formdata.password,
           firstname: this.formdata.firstname.toUpperCase(),
@@ -99,28 +100,30 @@ export default {
         }
         const value = checkPassword(this.formdata.password);
         if (checkPass['conditional'] && checkPhone['conditional']) {
-          this.$http.post(url, data1)
+          axios.post(url, data)
             .then(response => {
-            answer.innerHTML = response.data;
-            this.$store.commit('login', response);
-            if (response.status === 201) {
-            // Redirect to dashboard upon successful sign up
-          this.$router.push({ path: '/dashboard' });
+              answer.innerHTML = response.data;
+              this.$store.commit('login', response);
+              if (response.status === 201) {
+                // Redirect to dashboard upon successful sign up
+                this.$router.push({ path: '/dashboard' });
               }
-          })
-          .catch(error => {
-            answer.innerHTML = error.response.data.message;
-          });
-        } else{
+            })
+            .catch(error => {
+              answer.innerHTML = error.response.data.message;
+            });
+        } else {
           answer.innerHTML = value.message
         }
-      } else{
+      } else {
         answer.innerHTML = checkPhone['message'];
       }
     }
   },
 };
 </script>
+
+
 
 
 

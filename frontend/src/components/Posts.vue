@@ -81,7 +81,7 @@
 //import { store } from '../auth/store.js';
 import { mapState } from 'vuex/dist/vuex.esm-bundler.js';
 
-// import axios from 'axios';
+import axios from 'axios';
 
 
 export default {
@@ -153,133 +153,162 @@ export default {
       
       return datestring;
       },
-    dataPosts(){    
-      let url = "/comment/"+this.user.id;
-       let answer = document.getElementById("answer");
-        this.$http.get(url,{headers: {'Authorization': this.user.token},params:{'userId': this.user.id}}).then(response => {
-           this.$emit("updatePosts", JSON.parse(JSON.stringify(response.data.comments)))
-           
-          //this.posts = JSON.parse(JSON.stringify(response.data.comments));
-          this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
-          this.user_tag = JSON.parse(JSON.stringify(response.data.user));
-          })
-          .catch(error => {
-          answer.classList.remove('alert-success');
-          answer.classList.add('alert-danger');
-          answer.innerHTML = error.response.data.message;
-          });
+      dataPosts() {
+      const url = '/comment/' + this.user.id;
+      const answer = document.getElementById('answer');
+      axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${this.user.token}`,
+        },
+        params: {
+          userId: this.user.id,
+        },
+      })
+      .then(response => {
+        this.$emit('updatePosts', JSON.parse(JSON.stringify(response.data.comments)));
+        //this.posts = JSON.parse(JSON.stringify(response.data.comments));
+        this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
+        this.user_tag = JSON.parse(JSON.stringify(response.data.user));
+      })
+      .catch(error => {
+        answer.classList.remove('alert-success');
+        answer.classList.add('alert-danger');
+        answer.innerHTML = error.response.data.message;
+      });
     },
-    addPost (user, post){
+    addPost(user, post) {
       let url = "/auth/add";
-        let data1 = {
-          userId: user,
-          postiD: post,
-        }
-           let answer = document.getElementById("answer");
-         this.$http.post(url,data1,{headers: {'Authorization': this.user.token},params:{'userId': this.user.id}}).then(response => {
-          if(response.status == 201){
-          answer.classList.remove('alert-danger');
-          answer.classList.add('alert-success');
-          answer.innerHTML = "Post read"
-           }else{
-          answer.classList.remove('alert-success');
-          answer.classList.add('alert-danger');
-          answer.innerHTML = "Something went wrong"
+      let data1 = {
+        userId: user,
+        postiD: post,
+      };
+      let answer = document.getElementById("answer");
+      this.$http
+        .post(url, data1, {
+          headers: { Authorization: `Bearer ${this.user.token}` },
+          params: { userId: this.user.id },
+        })
+        .then((response) => {
+          if (response.status == 201) {
+            answer.classList.remove("alert-danger");
+            answer.classList.add("alert-success");
+            answer.innerHTML = "Post read";
+          } else {
+            answer.classList.remove("alert-success");
+            answer.classList.add("alert-danger");
+            answer.innerHTML = "Something went wrong";
           }
           setTimeout(() => {
-          this.clear()
-          },1000)
-          })
-          .catch(error => {
-               if(error.status == 500){
-                let answer = document.getElementById("answer");
-                answer.classList.remove('alert-success');
-                answer.classList.add('alert-danger');
-                answer.innerHTML = error.response.data.message;
-               }
-          });
-    },
-    post () {    
-     const comment = document.getElementById('comment1').value;
-     if(comment != ''){
-        let url = "/comment";
-        let data1 = {
-          userId: this.user.id,
-          comment: this.comment,
-        }
-        const formData = new FormData();
-        //Take the first selected file
-        const fileField = document.querySelector('input[type="file"]')
-        formData.append("files", fileField.files[0])
-        formData.append("body", JSON.stringify(data1));
-         let answer = document.getElementById("answer");
-        this.$http.post(url,formData,{headers: {'Authorization': this.user.token},params:{'userId': this.user.id}}).then(response => {
-          this.clear()
-          if(response.status == 201){
-          answer.classList.remove('alert-danger');
-          answer.classList.add('alert-success');
-          answer.innerHTML = "Post created"
-          }else{
-          answer.classList.remove('alert-success');
-          answer.classList.add('alert-danger');
-          answer.innerHTML = "Something went wrong"
+            this.clear();
+          }, 1000);
+        })
+        .catch((error) => {
+          if (error.status == 500) {
+            let answer = document.getElementById("answer");
+            answer.classList.remove("alert-success");
+            answer.classList.add("alert-danger");
+            answer.innerHTML = error.response.data.message;
           }
-          })
-          .catch(error => {
-          answer.classList.remove('alert-success');
-          answer.classList.add('alert-danger');
-          answer.innerHTML = error.response.data.message;
-          });
-     }else{
-       document.getElementById('comment1').placeholder = "Please write something down to post"
-       
-     }
-    },
-  
-    show (postdata) {
-      let unread = this.user.post_unread-1;
-        this.$store.commit('unread',unread); 
-        this.addPost(this.user.id,postdata.idComment)
-        this.$store.commit('comment',postdata.idComment);
-        this.$router.push({path:'/replies'})    
-    },
-    reply (idComment) {    
-     const comment = document.getElementById(idComment).value;
-     if(comment != ''){
-        let url = "/Reply";
-        let data1 = {
-          userId: this.user.id,
-          id: this.user.id,
-          idComment: idComment,
-          reply: comment
-        }
-        const formData = new FormData();
-        formData.append("body", JSON.stringify(data1));
-        let answer = document.getElementById("answer");
-        this.$http.post(url,formData,{headers: {'Authorization': this.user.token},params:{'userId': this.user.id}}).then(response => {
-          this.clear()
-          if(response.status == 201){
-          answer.classList.remove('alert-danger');
-          answer.classList.add('alert-success');
-          answer.innerHTML = "Reply created"
-          }else{
-          answer.classList.remove('alert-success');
-          answer.classList.add('alert-danger');
-          answer.innerHTML = "Something went wrong"
-          }
-          setTimeout(() => {
-          this.dataPosts();
-          },1000)
-        }).catch(error => { 
-          answer.classList.remove('alert-success');
-          answer.classList.add('alert-danger');
-          answer.innerHTML = error.response.data.message;
         });
-     }else{
-       document.getElementById(idComment).placeholder = "Please write something down to post"
-       
-     }
     },
+    post() {
+  const comment = document.getElementById('comment1').value;
+  if(comment != '') {
+    const url = "/comment";
+    const data1 = {
+      userId: this.user.id,
+      comment: this.comment,
+    };
+    const formData = new FormData();
+    const fileField = document.querySelector('input[type="file"]');
+    formData.append("files", fileField.files[0]);
+    formData.append("body", JSON.stringify(data1));
+    const answer = document.getElementById("answer");
+    this.$http.post(url, formData, {
+      headers: {
+        Authorization: `Bearer ${this.user.token}`,
+      },
+      params: {
+        userId: this.user.id,
+      }
+    })
+      .then(response => {
+        this.clear();
+        if(response.status == 201) {
+          answer.classList.remove('alert-danger');
+          answer.classList.add('alert-success');
+          answer.innerHTML = "Post created";
+        } else {
+          answer.classList.remove('alert-success');
+          answer.classList.add('alert-danger');
+          answer.innerHTML = "Something went wrong";
+        }
+      })
+      .catch(error => {
+        answer.classList.remove('alert-success');
+        answer.classList.add('alert-danger');
+        answer.innerHTML = error.response.data.message;
+      });
+  } else {
+    document.getElementById('comment1').placeholder = "Please write something down to post";
+  }
+},
+
+  
+  // updated show function
+show (postdata) {
+  let unread = this.user.post_unread - 1;
+  this.$store.commit('unread',unread);
+  this.addPost(this.user.id,postdata.idComment);
+  this.$store.commit('comment',postdata.idComment);
+  this.$router.push({path:'/replies'});
+},
+
+// updated reply function
+reply (idComment) {    
+  const comment = document.getElementById(idComment).value;
+  if(comment != ''){
+    let url = "/Reply";
+    let data1 = {
+      userId: this.user.id,
+      id: this.user.id,
+      idComment: idComment,
+      reply: comment
+    }
+    const formData = new FormData();
+    formData.append("body", JSON.stringify(data1));
+    let answer = document.getElementById("answer");
+    axios.post(url,formData,{
+      headers: {
+        'Authorization': this.user.token
+      },
+      params: {
+        'userId': this.user.id
+      }
+    }).then(response => {
+      this.clear()
+      if(response.status == 201){
+        answer.classList.remove('alert-danger');
+        answer.classList.add('alert-success');
+        answer.innerHTML = "Reply created"
+      }else{
+        answer.classList.remove('alert-success');
+        answer.classList.add('alert-danger');
+        answer.innerHTML = "Something went wrong"
+      }
+      setTimeout(() => {
+        this.dataPosts();
+      },1000)
+    }).catch(error => { 
+      answer.classList.remove('alert-success');
+      answer.classList.add('alert-danger');
+      answer.innerHTML = error.response.data.message;
+    });
+  }else{
+    document.getElementById(idComment).placeholder = "Please write something down to post"
+  }
+},
+
     onUploadFile () {
       this.$refs.fileInput.click()
     },

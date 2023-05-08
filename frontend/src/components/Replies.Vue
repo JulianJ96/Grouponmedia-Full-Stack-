@@ -57,7 +57,7 @@
 import { error } from 'console';
 //import { store } from '..auth/store.js';
 import { mapState } from 'vuex/dist/vuex.esm-bundler.js';
-// import axios from 'axios';
+import axios from 'axios';
 
 export default {
   name: "Posts",
@@ -141,7 +141,7 @@ export default {
         formData.append("file", fileField.files[0]);
         formData.append("data", JSON.stringify(data));
         const answer = document.getElementById("answer");
-        this.$$http.post(url, formData, {headers:{Authorization: this.user.token }, params: { userId: this.user.user } })
+        axios.post(url, formData, {headers:{Authorization: `Bearer ${this.user.token}` }, params: { userId: this.user.user } })
         .then(response => {
           setTimeout(()=> {
             this.clear();
@@ -182,7 +182,7 @@ export default {
         }
         const formData = new FormData();
         formData.append("body", JSON.stringify(data1));
-        this.$http.post(url, formData, {headers: {'Authorization': this.user.token}, params: {'userId': this.user.id}}).then(response => {
+        axios.post(url, formData, {headers: {'Authorization': `Bearer ${this.user.token}`}, params: {'userId': this.user.id}}).then(response => {
           this.idcomment = this.user.idComment;
           this.getPostsReplies(this.idcomment);
           let answer = document.getElementById("answer");

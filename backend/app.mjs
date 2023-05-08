@@ -6,7 +6,7 @@ import mysql from 'mysql';
 import sql from 'mssql';
 import sequelize from './config/db.config2.mjs';
 import cors from 'cors';
-import XMLHttpRequest from 'xhr2';
+
 
 
 
@@ -31,8 +31,10 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
     next();
-  });
+});
+  
   
 // Routes
 import userRoutes from './routes/user.mjs';
@@ -44,7 +46,10 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use('/', express.static(path.join(__dirname, 'static')));
 app.use('', express.static(path.join(__dirname, 'images')));
-app.use(cors({ origin: 'http://localhost:5173'}));
+app.use(cors({
+    origin: 'http://localhost:5173',
+    optionsSuccessStatus: 200
+  }));
 app.use('/api/auth', userRoutes);
 app.use('/api/reply', replyRoutes);
 app.use('/api/comment', commentRoutes);
