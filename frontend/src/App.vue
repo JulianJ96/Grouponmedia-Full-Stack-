@@ -45,6 +45,7 @@
 </template>
 
 <script>
+import Axios from 'axios';
 import { mapState } from "vuex";
 
 export default {
@@ -65,8 +66,8 @@ export default {
         },
         params: {
           'userId': this.user.id
-        }
-      }).then(response => {
+        }})
+      .then(response => {
         this.user.firstname = response.data.firstname;
         this.user.lastname = response.data.lastname;
         this.$router.push(this.$route.path);

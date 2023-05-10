@@ -45,13 +45,23 @@
   </div>
 </template>
 
+
+
+
+
+
 <script>
-import All from  '../components/Posts.vue'
-import { mapState } from "vuex";
+
+// @ is an alias to /src
+//import Home from '@/components/Home.vue'
+import All from  '@/components/Posts.vue'
 import axios from 'axios';
+
+import { mapState } from "vuex";
 export default {
   name: 'Dashboard',
   components: {
+    //Home,
     All
   }, data() {
     return {
@@ -71,26 +81,29 @@ export default {
   props: {
     msg: String
   },
-  computed: {
+   computed: {
     ...mapState({
       user: (state) => state.user
     })
   },
-  mounted(){
+     mounted(){
      this.dataPosts();
-  },
+    },
+
   methods: {
     updateparent(post) {
         this.posts = post
     },
     commentcount(id){
       var cont = 0;
+
       var replys = this.replyresponse;
       if (replys != null){
         for (var i = 0 ; i < replys.length; i++ ){
           if (replys[i].idComment == id){
             cont++
           }
+
         }
         return cont;
       }else{
@@ -99,6 +112,8 @@ export default {
     },
     commentdate(datecomment){
        var date = datecomment.split('.',1);
+
+
       var date1 = new Date(date);
      var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     var datestring = date1.toLocaleDateString('en-US', options)+ " " +
@@ -106,294 +121,240 @@ export default {
       
       return datestring;
       },
-    dataPosts(){
-  let url = "/comment/" + this.user.id;
- axios.get(url, {
-  headers: {
-    'Authorization': `Bearer ${this.user.token}`,
-    'userId': this.user.id
-  },
-  withCredentials: true
-})
-
-  .then(response => {
-    let check = typeof(JSON.parse(JSON.stringify(response.data.comments)));
-    if(check!= 'Array'){
-      this.posts = JSON.parse(JSON.stringify(response.data.comments));
-      this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
-      let check2 = typeof(JSON.parse(JSON.stringify(response.data.user)));
-      if(check2 != 'Array'){
-        this.user_tag = JSON.parse(JSON.stringify(response.data.user));
-        this.tags = JSON.parse(JSON.stringify(response.data.user));
-      }
-    } else { 
-      this.posts = JSON.stringify(response.data.comments);
-      this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
-      this.user_tag = JSON.parse(JSON.stringify(response.data.user));
-      this.tags = JSON.parse(JSON.stringify(response.data.user));
+     dataPosts() {
+    let url = "http://localhost:3000/api/comment/" + this.user.id;
+    
+    axios
+      .get(url, {
+        headers: {
+          'Authorization': this.user.token
+        },
+        params: {
+          'userId': this.user.id
+        }
+      })
+      .then(response => {
+        console.log(response);
+        let check = typeof JSON.parse(JSON.stringify(response.data.comments));
+        if (check !== 'Array') {
+          this.posts = JSON.parse(JSON.stringify(response.data.comments));
+          this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
+          let check2 = typeof JSON.parse(JSON.stringify(response.data.user));
+          if (check2 !== 'Array') {
+            this.user_tag = JSON.parse(JSON.stringify(response.data.user));
+            this.tags = JSON.parse(JSON.stringify(response.data.user));
+          }
+        } else {
+          this.posts = JSON.stringify(response.data.comments);
+          this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
+          this.user_tag = JSON.parse(JSON.stringify(response.data.user));
+          this.tags = JSON.parse(JSON.stringify(response.data.user));
         }
       })
       .catch(error => {
         console.error(error);
-        alert('Failed to fetch posts. Please try again later.');
       });
-    },
+  },
     addPost (user, post){
-      let url = "/auth/add";
-      let data1 = {
-        userId: user,
-        postiD: post,
-      }
-      axios.post(url, data1, {
-        headers: {'Authorization': `Bearer ${this.user.token}`},
-        params: {'userId': this.user.user}
-      })
-      .then(response => {
-        if(response.status == 201){
-          for ( var i = 0 ; i < this.posts.length ; i++){
-            if(this.posts[i].idComment == post){
-              this.posts[i].user_tag = true;
-            }
-          }
+      let url = "http://localhost:3000/api/auth/";
+        let data1 = {
+          userId: user,
+          postiD: post,
         }
+         axios.post(url,data1,{headers: {'Authorization': this.user.token},params:{'userId': this.user.user}}).then(response => {
+           if(response.status == 201){
+
+             for ( var i = 0 ; i < this.posts.length ; i++){
+              if(this.posts[i].idComment == post){
+                this.posts[i].user_tag = true;
+              }
+              }
+           }
+          })
+          .catch(error => { 
+            console.error(error);
+          });
+    },
+    post () {  
+     const comment = document.getElementById('comment1').value;
+     if(comment != ''){
+        let url = "http://localhost:3000/api/comment";
+        let data1 = {
+          userId: this.user.id,
+          comment: this.comment,
+        }
+        const formData = new FormData();
+        //Take the first selected file
+        const fileField = document.querySelector('input[type="file"]')
+        formData.append("files", fileField.files[0])
+        formData.append("body", JSON.stringify(data1));
+        axios.post(url,formData,{headers: {'Authorization': this.user.token},params:{'userId': this.user.id}}).then(response => {
+          this.clear()
+         let answer = document.getElementById("answer");
+          if(response.status == 201){
+          answer.classList.remove('alert-danger');
+          answer.classList.add('alert-success');
+          answer.innerHTML = "Post Created"
+           }else{
+          answer.classList.remove('alert-success');
+          answer.classList.add('alert-danger');
+          answer.innerHTML = "Something went wrong"
+          }
+          this.addPost(response.data.message.idUserComment,response.data.message.idComment)
+          setTimeout(() => {
+          this.dataPosts();
+          },1000)
+          })
+          .catch(error => {
+            console.error(error);
+          });
+     }else{
+       document.getElementById('comment1').placeholder = "Please write something down to post"
+       
+     }
+    },
+  
+    show (idComment) {
+    var display = document.getElementById('show'+idComment);
+
+    if(display.classList.contains('d-none')){
+      display.classList.remove('d-none');
+      display.classList.add('d-block');
+    }else{
+  
+      display.classList.remove('d-block');
+      display.classList.add('d-none');
+    }
+    
+    },
+    reply (idComment) {    
+     const comment = document.getElementById(idComment).value;
+     if(comment != ''){
+        let url = "http://localhost:3000/api/reply/";
+        let data1 = {
+          id: this.user.id,
+          idComment: idComment,
+          reply: this.replytext[idComment]
+        }
+        const formData = new FormData();
+        formData.append("body", JSON.stringify(data1));
+        this.$http.post(url,formData,{headers: {'Authorization': this.user.token},params:{'userId': this.user.user}}).then(response => {
+          setTimeout(() => {
+          this.clear()
+          },1000)
+           document.getElementById("answer").innerHTML = response
+          })
+          .catch(error => {
+            console.error(error);
+          });
+     }else{
+       document.getElementById(idComment).placeholder = "Please write something down to post"
+       
+     }
+    },
+    onUploadFile () {
+      this.$refs.fileInput.click()
+    },
+    onFilePicked (event) {
+      let images = document.getElementById("imageUploaded");
+      this.image =  this.$refs.fileInput.files[0];
+      const files = event.target.files
+      //let filename = files[0].name
+      
+      const fileReader = new FileReader()
+      fileReader.addEventListener('load', () => {
+
+        this.imageUrl = fileReader.result;
+
+         if(files[0].type === 'video/mp4'){   
+            if (!document.getElementById("video") && !document.getElementById("image") ){
+                createVideo(this.imageUrl)
+            }else{
+                 if(document.getElementById("image") ){
+                const picture1 = document.getElementById('image');
+                images.removeChild(picture1);
+                }
+                if(document.getElementById("video") ){
+                const picture1 = document.getElementById('video');
+                images.removeChild(picture1);
+                }
+                 createVideo(this.imageUrl) 
+            }
+         }else{
+             if (!document.getElementById("video") &&  !document.getElementById("image") ){
+                createImage(this.imageUrl)
+             }else{
+               if(document.getElementById("image") ){
+                const picture1 = document.getElementById('image');
+                images.removeChild(picture1);
+                }
+                if(document.getElementById("video") ){
+                const picture1 = document.getElementById('video');
+                images.removeChild(picture1);
+                }
+                 createImage(this.imageUrl) 
+             }
+           
+          }
+            
+               
       })
-      .catch(error => { 
-        console.error(error);
-      });
+
+      function createVideo(imageUrl){
+        const div1 = document.createElement('video');
+        div1.id = "video"
+        div1.controls = "controls";
+        div1.className = "img-fluid"
+        images.appendChild(div1);
+        const div2 = document.createElement('source');
+        div2.ype ="video/mp4";
+        div2.src = imageUrl;
+        div1.appendChild(div2);
+      }
+
+      function createImage(imageUrl){
+        const picture = document.createElement('img');
+              picture.id = "image";
+              picture.src = imageUrl;
+              picture.className = "img-fluid";
+              images.appendChild(picture);
+      }
+      
+      fileReader.readAsDataURL(files[0])
+      this.multimedia = files[0]; 
+      const picture = document.getElementById('uploaded');
+      picture.classList.replace('d-none', 'd-block');
+        //Take the first selected file
+        
+    },
+    clear () {
+      let images = document.getElementById("imageUploaded");       
+      let picture = document.getElementById('uploaded');
+      let answer = document.getElementById("answer"); 
+      if (document.getElementById("uploaded")){
+      picture.classList.replace('d-block', 'd-none');
+      }
+      if (document.getElementById("video")){
+        const picture1 = document.getElementById('video');
+            images.removeChild(picture1);
+      }else{
+        if (document.getElementById("image")){
+          const picture1 = document.getElementById('image');
+            images.removeChild(picture1);
+        }
+        
+      }
+      answer.innerHTML = "",
+      this.username = "",
+      this.password = "",
+      this.comment = "",
+      this.image = null,
+      this.video = null,
+      this.multimedia = null,
+      this.replytext = ""
     }
   },
- post() {
-  const comment = document.getElementById("comment1").value;
-  if (comment != "") {
-    let url = "/comment";
-    let data1 = {
-      userId: this.user.id,
-      comment: this.comment,
-    };
-    const formData = new FormData();
-    // Take the first selected file
-    const fileField = document.querySelector('input[type="file"]');
-    formData.append("files", fileField.files[0]);
-    formData.append("body", JSON.stringify(data1));
-    fetch(url, {
-      method: "POST",
-      body: formData,
-      headers: {
-        Authorization: `Bearer ${this.user.token}`,
-        'Content-Type': 'application/json'
-      },
-      params: {
-        userId: this.user.id,
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error("Something went wrong");
-        }
-      })
-      .then((data) => {
-        this.clear();
-        let answer = document.getElementById("answer");
-        answer.classList.remove("alert-danger");
-        answer.classList.add("alert-success");
-        answer.innerHTML = "Post Created";
-        this.addPost(data.message.idUserComment, data.message.idComment);
-        setTimeout(() => {
-          this.dataPosts();
-        }, 1000);
-      })
-      .catch((error) => {
-        console.error(error);
-        let answer = document.getElementById("answer");
-        answer.classList.remove("alert-success");
-        answer.classList.add("alert-danger");
-        answer.innerHTML = "Something went wrong";
-      });
-  } else {
-    document.getElementById("comment1").placeholder = "Please write something down to post";
-  }
-},
 
-
-show(idComment) {
-  var display = document.getElementById("show" + idComment);
-  if (display.classList.contains("d-none")) {
-    display.classList.remove("d-none");
-    display.classList.add("d-block");
-  } else {
-    display.classList.remove("d-block");
-    display.classList.add("d-none");
-  }
-},
-
-reply(idComment) {
-  const comment = document.getElementById(idComment).value;
-  if (comment != "") {
-    let url = "/Reply";
-    let data1 = {
-      id: this.user.id,
-      idComment: idComment,
-      reply: this.replytext[idComment],
-    };
-    const formData = new FormData();
-    formData.append("body", JSON.stringify(data1));
-    this.$http.post(url, formData, {
-      headers: {
-        Authorization: `Bearer ${this.user.token}`
-      },
-      params: {
-        userId: this.user.user
-      }
-    })
-      .then((response) => {
-        setTimeout(() => {
-          this.clear();
-        }, 1000);
-        document.getElementById("answer").innerHTML = response.data;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  } else {
-    document.getElementById(idComment).placeholder = "Please write something down to post";
-  }
-},
-
-
-onUploadFile() {
-  this.$refs.fileInput.click();
-},
-onFilePicked(event) {
-  const images = document.getElementById("imageUploaded");
-  this.image = this.$refs.fileInput.files[0];
-  const files = event.target.files;
-
-  const fileReader = new FileReader();
-  fileReader.addEventListener("load", () => {
-    this.imageUrl = fileReader.result;
-    if (files[0].type === "video/mp4") {
-      if (!document.getElementById("video") && !document.getElementById("image")) {
-        createVideo(this.imageUrl);
-      } else {
-        if (document.getElementById("image")) {
-          const picture1 = document.getElementById("image");
-          images.removeChild(picture1);
-        }
-        if (document.getElementById("video")) {
-          const picture1 = document.getElementById("video");
-          images.removeChild(picture1);
-        }
-        createVideo(this.imageUrl);
-      }
-    } else {
-      if (!document.getElementById("video") && !document.getElementById("image")) {
-        createImage(this.imageUrl);
-      } else {
-        if (document.getElementById("image")) {
-          const picture1 = document.getElementById("image");
-          images.removeChild(picture1);
-        }
-        if (document.getElementById("video")) {
-          const picture1 = document.getElementById("video");
-          images.removeChild(picture1);
-        }
-        createImage(this.imageUrl);
-      }
-    }
-  });
-
-  function createVideo(imageUrl) {
-    const div1 = document.createElement("video");
-    div1.id = "video";
-    div1.controls = "controls";
-    div1.className = "img-fluid";
-    images.appendChild(div1);
-    const div2 = document.createElement("source");
-    div2.ype = "video/mp4";
-    div2.src = imageUrl;
-    div1.appendChild(div2);
-
-    // Make HTTP request to backend API
-    const formData = new FormData();
-    formData.append("file", files[0]);
-    fetch("https://example.com/upload", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => console.log(data))
-      .catch((error) => console.error(error));
-  }
-
-  function createImage(imageUrl) {
-    const picture = document.createElement("img");
-    picture.id = "image";
-    picture.src = imageUrl;
-    picture.className = "img-fluid";
-    images.appendChild(picture);
-
-    // Make HTTP request to backend API
-    const formData = new FormData();
-    formData.append("file", files[0]);
-    fetch("https://example.com/upload", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => console.log(data))
-      .catch((error) => console.error(error));
-  }
-
-  fileReader.readAsDataURL(files[0]);
-  this.multimedia = files[0];
-  const picture = document.getElementById("uploaded");
-  picture.classList.replace("d-none", "d-block");
-},
-clear() {
-  let images = document.getElementById("imageUploaded");
-  let picture = document.getElementById('uploaded');
-  let answer = document.getElementById("answer");
-  if (document.getElementById("uploaded")) {
-    picture.classList.replace('d-block', 'd-none');
-  }
-  if (document.getElementById("video")) {
-    const picture1 = document.getElementById('video');
-    images.removeChild(picture1);
-  } else {
-    if (document.getElementById("image")) {
-      const picture1 = document.getElementById('image');
-      images.removeChild(picture1);
-    }
-  }
-  answer.innerHTML = "";
-  this.username = "";
-  this.password = "";
-  this.comment = "";
-  this.image = null;
-  this.video = null;
-  this.multimedia = null;
-  this.replytext = "";
-
-  // Make HTTP request to clear API endpoint
-  fetch('/api/clear', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({})
-  })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      // Success
-    })
-    .catch(error => {
-      console.error('There was a problem clearing the state:', error);
-    });
-  }
 }
 </script>
 

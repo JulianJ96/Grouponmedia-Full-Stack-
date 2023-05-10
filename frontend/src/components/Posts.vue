@@ -156,9 +156,9 @@ export default {
       dataPosts() {
       const url = '/comment/' + this.user.id;
       const answer = document.getElementById('answer');
-      axios.get(url, {
+      this.$http.get(url, {
         headers: {
-          Authorization: `Bearer ${this.user.token}`,
+          Authorization: this.user.token,
         },
         params: {
           userId: this.user.id,
@@ -185,7 +185,7 @@ export default {
       let answer = document.getElementById("answer");
       this.$http
         .post(url, data1, {
-          headers: { Authorization: `Bearer ${this.user.token}` },
+          headers: { Authorization: this.user.token },
           params: { userId: this.user.id },
         })
         .then((response) => {
@@ -214,7 +214,7 @@ export default {
     post() {
   const comment = document.getElementById('comment1').value;
   if(comment != '') {
-    const url = "/comment";
+    const url = "/comment/";
     const data1 = {
       userId: this.user.id,
       comment: this.comment,
@@ -226,7 +226,7 @@ export default {
     const answer = document.getElementById("answer");
     this.$http.post(url, formData, {
       headers: {
-        Authorization: `Bearer ${this.user.token}`,
+        Authorization: this.user.token,
       },
       params: {
         userId: this.user.id,
@@ -278,7 +278,7 @@ reply (idComment) {
     const formData = new FormData();
     formData.append("body", JSON.stringify(data1));
     let answer = document.getElementById("answer");
-    axios.post(url,formData,{
+    this.$http.post(url,formData,{
       headers: {
         'Authorization': this.user.token
       },

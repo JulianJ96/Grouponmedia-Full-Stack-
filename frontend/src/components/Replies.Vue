@@ -116,7 +116,7 @@ export default {
     },
     getPostsReplies(idComment){
       let url = "/comment"+this.user.id+"/"+idComment;
-      this.$http.get(url,{headers: {'Authorization': this.user.token}, params: {'userId': this.user.id}}).then(response => {
+      axios.get(url,{headers: {'Authorization': this.user.token}, params: {'userId': this.user.id}}).then(response => {
         this.replyresponse = response.data.comments;
         this.clear()
         setTimeout(() => {
@@ -131,7 +131,7 @@ export default {
     post(){
       const comment = document.getElementById('comment').value;
       if (comment !== ''){
-        const url = "/comment";
+        const url = "/comment/";
         const data = {
           userId: this.user.id,
           comment: comment,
@@ -155,7 +155,7 @@ export default {
         .catch(error => {
           answer.classList.remove('alert-sucess');
           answer.classList.add('alert-danger');
-          answer.innerHTML = error.response ? error.response.data.message: "Something went wrong";
+          answer.innerHTML = error.response.data.message;
         });
       } else {
         document.getElementById('comment').placeholder = "Please write something here";
@@ -174,7 +174,7 @@ export default {
     reply(idComment){
       const comment = document.getElementById("reply").value;
       if(comment != ''){
-        let url = "/Reply";
+        let url = "/Reply/";
         let data = {
           userId: this.user.id,
           idComment: idComment,

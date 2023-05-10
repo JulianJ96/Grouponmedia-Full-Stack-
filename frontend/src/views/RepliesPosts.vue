@@ -28,6 +28,7 @@
 // @ is an alias to /src
 import Replies from '../components/Replies.vue';
 import { mapState } from "vuex";
+import Axios from 'axios';
 export default {
   name: 'Dashboard',
   components: {
@@ -59,15 +60,21 @@ export default {
       getPostsReplies(idComment){
       let url = "/comment/"+this.user.id+"/"+idComment;
         
-        this.$http.get(url,{headers: {'Authorization': this.user.token},params:{'userId': this.user.id}}).then(response => {
+        this.$http.get(url, {
+          headers: {
+            'Authorization': `Bearer ${this.user.token}`
+          },
+          params: {
+            'userId': this.user.id
+          }
+        }).then(response => {
           this.replyresponse = response.data.comments;
           setTimeout(() => {
-          this.clear()
-          },1000)
-          })
-          .catch(error => {
-            console.error(error);
-          });
+            this.clear();
+          }, 1000);
+        }).catch(error => {
+          console.error(error);
+        });
     },
       reply (idComment) {    
       const comment = document.getElementById("reply").value;
