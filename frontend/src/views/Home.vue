@@ -57,6 +57,7 @@
 import All from  '@/components/Posts.vue'
 import axios from 'axios';
 
+
 import { mapState } from "vuex";
 export default {
   name: 'Dashboard',
@@ -121,60 +122,94 @@ export default {
       
       return datestring;
       },
-     dataPosts() {
-    let url = "http://localhost:3000/api/comment/" + this.user.id;
-    
-    axios
-      .get(url, {
-        headers: {
-          'Authorization': this.user.token
-        },
-        params: {
-          'userId': this.user.id
-        }
-      })
-      .then(response => {
-        console.log(response);
-        let check = typeof JSON.parse(JSON.stringify(response.data.comments));
-        if (check !== 'Array') {
-          this.posts = JSON.parse(JSON.stringify(response.data.comments));
-          this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
-          let check2 = typeof JSON.parse(JSON.stringify(response.data.user));
-          if (check2 !== 'Array') {
-            this.user_tag = JSON.parse(JSON.stringify(response.data.user));
-            this.tags = JSON.parse(JSON.stringify(response.data.user));
-          }
-        } else {
-          this.posts = JSON.stringify(response.data.comments);
-          this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
+dataPosts() {
+  let url = "http://localhost:3000/api/comment/" + this.user.id;
+
+  // Assuming you have a valid token stored in this.user.token
+
+  // Make the API request with the valid token
+  axios
+    .get(url, {
+      headers: {
+        'Authorization': this.user.token
+      },
+      params: {
+        'userId': this.user.id
+      }
+    })
+    .then(response => {
+      // Check if the response is as expected
+      console.log(response);
+      // Handle the response data as needed
+      let check = typeof JSON.parse(JSON.stringify(response.data.comments));
+      if (check !== 'Array') {
+        this.posts = JSON.parse(JSON.stringify(response.data.comments));
+        this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
+        let check2 = typeof JSON.parse(JSON.stringify(response.data.user));
+        if (check2 !== 'Array') {
           this.user_tag = JSON.parse(JSON.stringify(response.data.user));
           this.tags = JSON.parse(JSON.stringify(response.data.user));
         }
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  },
-    addPost (user, post){
-      let url = "http://localhost:3000/api/auth/";
-        let data1 = {
-          userId: user,
-          postiD: post,
-        }
-         axios.post(url,data1,{headers: {'Authorization': this.user.token},params:{'userId': this.user.user}}).then(response => {
-           if(response.status == 201){
+      } else {
+        this.posts = JSON.stringify(response.data.comments);
+        this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
+        this.user_tag = JSON.parse(JSON.stringify(response.data.user));
+        this.tags = JSON.parse(JSON.stringify(response.data.user));
+      }
+    })
+    .catch(error => {
+      if (error.response.status === 401) {
+        console.error("Unauthorized: The token is expired or invalid.");
+        // Display an error message to the user or perform any other necessary actions
+      } else {
+        console.error("An error occurred:", error.response.statusText);
+        // Handle other error scenarios
+      }
+    });
+},
 
-             for ( var i = 0 ; i < this.posts.length ; i++){
-              if(this.posts[i].idComment == post){
-                this.posts[i].user_tag = true;
-              }
-              }
-           }
+addPost(user, post) {
+  let url = "http://localhost:3000/api/auth/";
+  let data1 = {
+    userId: user,
+    postiD: post,
+  }
+  axios.post(url, data1, {
+      headers: {
+        'Authorization': this.user.token
+      },
+      params: {
+        'userId': this.user.user
+      }
+    })
+    .then(response => {
+      if (response.status == 201) {
+        for (var i = 0; i < this.posts.length; i++) {
+          if (this.posts[i].idComment == post) {
+            this.posts[i].user_tag = true;
+          }
+        }
+      }
+    })
+    .catch(error => {
+      if (error.response.status === 401) {
+        console.error("Unauthorized: The token is expired or invalid.");
+
+        // Refresh the token here
+        this.refreshToken()
+          .then(() => {
+            // Call the addPost() method again after the token is refreshed
+            this.addPost(user, post);
           })
-          .catch(error => { 
-            console.error(error);
+          .catch(refreshError => {
+            console.error("Error refreshing token:", refreshError);
+            // Handle the error when token refresh fails
           });
-    },
+      } else {
+        console.error(error);
+      }
+    });
+},
     post () {  
      const comment = document.getElementById('comment1').value;
      if(comment != ''){
