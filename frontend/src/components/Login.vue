@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import Axios from 'axios';
 //import axios from "axios";
 //import { AUTH_REQUEST } from "../auth/actions/auth";
 import { mapState } from 'vuex/dist/vuex.esm-bundler.js';

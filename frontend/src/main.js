@@ -12,7 +12,7 @@ import Vuelidate from 'vuelidate'
 import  global from './assets/main.css';
 
 const base = axios.create({
-   baseURL: "http://localhost:3000/api"
+   baseURL: "http://localhost:3000/api/",
 });
 
 const app = createApp(App)
