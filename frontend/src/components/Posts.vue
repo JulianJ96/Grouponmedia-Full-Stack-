@@ -154,9 +154,9 @@ export default {
       return datestring;
       },
       dataPosts() {
-      const url = '/comment/' + this.user.id;
+      const url = 'http://localhost:3000/api/comment/' + this.user.id;
       const answer = document.getElementById('answer');
-      this.$http.get(url, {
+      axios.get(url, {
         headers: {
           Authorization: this.user.token,
         },
@@ -177,13 +177,13 @@ export default {
       });
     },
     addPost(user, post) {
-      let url = "/auth/add";
+      let url = "http://localhost:3000/api/auth/add";
       let data1 = {
         userId: user,
         postiD: post,
       };
       let answer = document.getElementById("answer");
-      this.$http
+      axios
         .post(url, data1, {
           headers: { Authorization: this.user.token },
           params: { userId: this.user.id },
@@ -214,7 +214,7 @@ export default {
     post() {
   const comment = document.getElementById('comment1').value;
   if(comment != '') {
-    const url = "/comment/";
+    const url = "http://localhost:3000/api/comment/";
     const data1 = {
       userId: this.user.id,
       comment: this.comment,
@@ -224,7 +224,7 @@ export default {
     formData.append("files", fileField.files[0]);
     formData.append("body", JSON.stringify(data1));
     const answer = document.getElementById("answer");
-    this.$http.post(url, formData, {
+    axios.post(url, formData, {
       headers: {
         Authorization: this.user.token,
       },
@@ -268,7 +268,7 @@ show (postdata) {
 reply (idComment) {    
   const comment = document.getElementById(idComment).value;
   if(comment != ''){
-    let url = "/Reply";
+    let url = "http://localhost:3000/api/reply";
     let data1 = {
       userId: this.user.id,
       id: this.user.id,
@@ -278,7 +278,7 @@ reply (idComment) {
     const formData = new FormData();
     formData.append("body", JSON.stringify(data1));
     let answer = document.getElementById("answer");
-    this.$http.post(url,formData,{
+    axios.post(url,formData,{
       headers: {
         'Authorization': this.user.token
       },

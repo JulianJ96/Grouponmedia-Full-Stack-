@@ -31,15 +31,23 @@ const Reply = sequelize.define('Reply', {
   },
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,
+}, {
+  // Define virtual properties
+  getterMethods: {
+    totalReplies() {
+      return this.getComment().then(comment => comment.totalReplies);
+    },
+  },
 });
 
-Reply.associate = function(models){
+Reply.associate = function(models) {
   Reply.belongsTo(models.Comment, {
     foreignKey: 'idCommentReply',
-    targetKey: 'idComment'
+    targetKey: 'idComment',
   });
 };
 
 export default Reply;
+
 
   

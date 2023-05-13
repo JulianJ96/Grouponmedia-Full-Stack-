@@ -115,7 +115,7 @@ export default {
       return datestring;
     },
     getPostsReplies(idComment){
-      let url = "/comment"+this.user.id+"/"+idComment;
+      let url = "http://localhost:3000/api/comment"+this.user.id+"/"+idComment;
       axios.get(url,{headers: {'Authorization': this.user.token}, params: {'userId': this.user.id}}).then(response => {
         this.replyresponse = response.data.comments;
         this.clear()
@@ -131,7 +131,7 @@ export default {
     post(){
       const comment = document.getElementById('comment').value;
       if (comment !== ''){
-        const url = "/comment/";
+        const url = "http://localhost:3000/api/comment/";
         const data = {
           userId: this.user.id,
           comment: comment,
@@ -174,7 +174,7 @@ export default {
     reply(idComment){
       const comment = document.getElementById("reply").value;
       if(comment != ''){
-        let url = "/Reply/";
+        let url = "http://localhost:3000/api/reply/";
         let data = {
           userId: this.user.id,
           idComment: idComment,

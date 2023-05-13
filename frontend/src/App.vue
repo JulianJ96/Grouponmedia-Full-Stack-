@@ -60,9 +60,9 @@ export default {
       this.user.post_unread = localStorage.getItem('unread');
       let data1 = localStorage.getItem('id');
       let url = "http://localhost:3000/api/auth/user/" + data1;
-      this.$http.get(url, {
+      Axios.get(url, {
         headers: {
-          'Authorization': localStorage.getItem('token')
+          'Authorization': this.user.token
         },
         params: {
           'userId': this.user.id
