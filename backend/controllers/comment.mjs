@@ -15,9 +15,9 @@ let arrayVideos = [];
 export const getAllComment = async(req, res, next) => {
   try {
     const comments = await sequelize.query('(SELECT c.idComment,c.idUserComment,c.comment,c.image,c.video,c.myDate,u.email,u.lastname,u.firstname,r.total_replies FROM Comments c LEFT JOIN Users u on c.idUserComment = u.idUser LEFT JOIN (SELECT COUNT(r.idReply) AS total_replies,idCommentReply FROM Replies r GROUP BY r.idCommentReply) r on r.idCommentReply = c.idComment) ORDER BY c.myDate DESC',
-    {
-      type: QueryTypes.SELECT
-    }); 
+  { type: sequelize.QueryTypes.SELECT }
+    );
+
     const usertags = await sequelize.query("SELECT u.tag_posts FROM Users u WHERE u.idUser = $idUser",
     {
      bind: { idUser: req.params.id },

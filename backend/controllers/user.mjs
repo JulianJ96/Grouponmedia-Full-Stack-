@@ -121,6 +121,8 @@ export const getuser = async (req, res, next) => {
           idUser: req.params.id
         }
       });
+      console.log(user.dataValues.firstname);
+      console.log('123456')
       res.send(user.dataValues);
     } catch (error) {
       res.status(400).send({ message: "No user found" });

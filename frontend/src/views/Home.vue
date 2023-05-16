@@ -119,7 +119,7 @@ export default {
       return datestring;
       },
 dataPosts() {
-  let url = "/comment/" + this.user.id;
+  let url = "http://localhost:3000/api/comment/" + this.user.id;
 
   Axios.get(url, {
     headers: {
@@ -150,7 +150,7 @@ dataPosts() {
 },
 
     addPost (user, post){
-      let url = "/auth/add";
+      let url = "http://localhost:3000/api/auth/add/";
         let data1 = {
           userId: user,
           postiD: post,
@@ -172,7 +172,7 @@ dataPosts() {
     post () {  
      const comment = document.getElementById('comment1').value;
      if(comment != ''){
-        let url = "/comment";
+        let url = "http://localhost:3000/api/comment/";
         let data1 = {
           userId: this.user.id,
           comment: this.comment,
@@ -224,7 +224,7 @@ dataPosts() {
     reply (idComment) {    
      const comment = document.getElementById(idComment).value;
      if(comment != ''){
-        let url = "/Reply";
+        let url = "http://localhost:3000/api/reply/";
         let data1 = {
           id: this.user.id,
           idComment: idComment,
