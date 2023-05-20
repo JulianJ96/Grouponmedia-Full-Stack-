@@ -106,17 +106,23 @@ export default {
         return cont;
       }
     },
-    commentdate(datecomment){
-      var date = datecomment.split(',',1);
-      var date1 = new Date(date);
-      var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
-      var datestring = date1.toLocaleDateString('en-US', options)+" "+
-      date1.getHours() + ":" + (date1.getMinutes()<10?'0':'') + date1.getMinutes();
-      return datestring;
-    },
+  commentdate(datecomment) {
+  if (datecomment === null) {
+    return ''; // Or any default value you want to return
+  }
+
+  var date = datecomment.split('.', 1);
+  var date1 = new Date(date);
+  var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  var datestring = date1.toLocaleDateString('en-US', options) + " " +
+    date1.getHours() + ":" + (date1.getMinutes() < 10 ? '0' : '') + date1.getMinutes();
+
+  return datestring;
+},
     getPostsReplies(idComment){
-      let url = "http://localhost:3000/api/comment"+this.user.id+"/"+idComment;
-      axios.get(url,{headers: {'Authorization': this.user.token}, params: {'userId': this.user.id}}).then(response => {
+      let url = `http://localhost:3000/api/comment/${this.user.id}/${idComment}`;
+
+      Axios.get(url,{headers: {'Authorization': this.user.token}, params: {'userId': this.user.id}}).then(response => {
         this.replyresponse = response.data.comments;
         this.clear()
         setTimeout(() => {
@@ -141,7 +147,7 @@ export default {
         formData.append("file", fileField.files[0]);
         formData.append("data", JSON.stringify(data));
         const answer = document.getElementById("answer");
-        axios.post(url, formData, {headers:{Authorization: `Bearer ${this.user.token}` }, params: { userId: this.user.user } })
+        Axios.post(url, formData, {headers:{Authorization: `Bearer ${this.user.token}` }, params: { userId: this.user.user } })
         .then(response => {
           setTimeout(()=> {
             this.clear();
@@ -182,7 +188,7 @@ export default {
         }
         const formData = new FormData();
         formData.append("body", JSON.stringify(data1));
-        axios.post(url, formData, {headers: {'Authorization': `Bearer ${this.user.token}`}, params: {'userId': this.user.id}}).then(response => {
+        Axios.post(url, formData, {headers: {'Authorization': `Bearer ${this.user.token}`}, params: {'userId': this.user.id}}).then(response => {
           this.idcomment = this.user.idComment;
           this.getPostsReplies(this.idcomment);
           let answer = document.getElementById("answer");

@@ -44,7 +44,7 @@ const Comment = sequelize.define(
   }
 );
 
-Comment.associate = function (models) {
+Comment.associate = function(models) {
   Comment.belongsTo(models.User, {
     foreignKey: 'idUserComment',
     targetKey: 'idUser',
@@ -54,6 +54,7 @@ Comment.associate = function (models) {
     sourceKey: 'idComment',
   });
 };
+
 
 export default Comment;
 

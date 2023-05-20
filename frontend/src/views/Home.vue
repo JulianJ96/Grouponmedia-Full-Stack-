@@ -119,21 +119,22 @@ export default {
       return datestring;
       },
 dataPosts() {
-  let url = "http://localhost:3000/api/comment/" + this.user.id;
+  let url = `http://localhost:3000/api/comment/${this.user.id}`;
 
   Axios.get(url, {
     headers: {
-      'Authorization': `Bearer:${this.user.token}`
+      'Authorization': `Bearer ${this.user.token}`
     },
     params: {
       'userId': this.user.id
     }
-  }).then(response => {
-    let check = typeof(JSON.parse(JSON.stringify(response.data.comments)));
+  })
+  .then(response => {
+    let check = typeof JSON.parse(JSON.stringify(response.data.comments));
     if (check != 'Array') {
       this.posts = JSON.parse(JSON.stringify(response.data.comments));
       this.replyresponse = JSON.parse(JSON.stringify(response.data.reply));
-      let check2 = typeof(JSON.parse(JSON.stringify(response.data.user)));
+      let check2 = typeof JSON.parse(JSON.stringify(response.data.user));
       if (check2 != 'Array') {
         this.user_tag = JSON.parse(JSON.stringify(response.data.user));
         this.tags = JSON.parse(JSON.stringify(response.data.user));
@@ -144,10 +145,12 @@ dataPosts() {
       this.user_tag = JSON.parse(JSON.stringify(response.data.user));
       this.tags = JSON.parse(JSON.stringify(response.data.user));
     }
-  }).catch(error => {
+  })
+  .catch(error => {
     console.error(error);
   });
 },
+
 
     addPost (user, post){
       let url = "http://localhost:3000/api/auth/add/";
@@ -169,44 +172,56 @@ dataPosts() {
             console.error(error);
           });
     },
-    post () {  
-     const comment = document.getElementById('comment1').value;
-     if(comment != ''){
-        let url = "http://localhost:3000/api/comment/";
-        let data1 = {
-          userId: this.user.id,
-          comment: this.comment,
-        }
-        const formData = new FormData();
-        //Take the first selected file
-        const fileField = document.querySelector('input[type="file"]')
-        formData.append("files", fileField.files[0])
-        formData.append("body", JSON.stringify(data1));
-        Axios.post(url,formData,{headers: {'Authorization': `Bearer:${this.user.token}`},params:{'userId': this.user.id}}).then(response => {
-          this.clear()
-         let answer = document.getElementById("answer");
-          if(response.status == 201){
-          answer.classList.remove('alert-danger');
-          answer.classList.add('alert-success');
-          answer.innerHTML = "Post Created"
-           }else{
-          answer.classList.remove('alert-success');
-          answer.classList.add('alert-danger');
-          answer.innerHTML = "Something went wrong"
-          }
-          this.addPost(response.data.message.idUserComment,response.data.message.idComment)
-          setTimeout(() => {
-          this.dataPosts();
-          },1000)
-          })
-          .catch(error => {
-            console.error(error);
-          });
-     }else{
-       document.getElementById('comment1').placeholder = "Please write something down to post"
-       
-     }
+post() {
+  const comment = document.getElementById('comment1').value;
+  if (comment === '') {
+    document.getElementById('comment1').placeholder = "WRITE YOUR POST";
+    return;
+  }
+
+  const url = "http://localhost:3000/api/comment/";
+  const data1 = {
+    userId: this.user.id,
+    comment: this.comment,
+  };
+
+  const formData = new FormData();
+  const fileField = document.querySelector('input[type="file"]');
+  formData.append("files", fileField.files[0]);
+  formData.append("body", JSON.stringify(data1));
+
+  const config = {
+    headers: {
+      'Authorization': `Bearer ${this.user.token}`,
     },
+    params: {
+      'userId': this.user.id,
+    },
+  };
+
+  Axios.post(url, formData, config)
+    .then(response => {
+      this.clear();
+      let answer = document.getElementById("answer");
+      if (response.status === 201) {
+        answer.classList.remove('alert-danger');
+        answer.classList.add('alert-success');
+        answer.innerHTML = "Post Created";
+      } else {
+        answer.classList.remove('alert-success');
+        answer.classList.add('alert-danger');
+        answer.innerHTML = "Something went wrong";
+      }
+      this.addPost(response.data.message.idUserComment, response.data.message.idComment);
+      setTimeout(() => {
+        this.dataPosts();
+      }, 1000);
+    })
+    .catch(error => {
+      console.error(error);
+    });
+},
+
   
     show (idComment) {
     var display = document.getElementById('show'+idComment);
@@ -221,31 +236,41 @@ dataPosts() {
     }
     
     },
-    reply (idComment) {    
-     const comment = document.getElementById(idComment).value;
-     if(comment != ''){
-        let url = "http://localhost:3000/api/reply/";
-        let data1 = {
-          id: this.user.id,
-          idComment: idComment,
-          reply: this.replytext[idComment]
-        }
-        const formData = new FormData();
-        formData.append("body", JSON.stringify(data1));
-        Axios.post(url,formData,{headers: {'Authorization': `Bearer:${this.user.token}`},params:{'userId': this.user.user}}).then(response => {
-          setTimeout(() => {
-          this.clear()
-          },1000)
-           document.getElementById("answer").innerHTML = response
-          })
-          .catch(error => {
-            console.error(error);
-          });
-     }else{
-       document.getElementById(idComment).placeholder = "Please write something down to post"
-       
-     }
-    },
+ reply(idComment) {
+  const comment = document.getElementById(idComment).value;
+  if (comment !== '') {
+    const url = "http://localhost:3000/api/reply/";
+    const data1 = {
+      id: this.user.id,
+      idComment: idComment,
+      reply: this.replytext[idComment]
+    };
+
+    const formData = new FormData();
+    formData.append("body", JSON.stringify(data1));
+
+    Axios.post(url, formData, {
+      headers: {
+        'Authorization': `Bearer ${this.user.token}`,
+        'Content-Type': 'multipart/form-data',
+      },
+      params: {
+        'userId': this.user.id,
+      },
+    })
+      .then(response => {
+        setTimeout(() => {
+          this.clear();
+        }, 1000);
+        document.getElementById("answer").innerHTML = response.data.message;
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  } else {
+    document.getElementById(idComment).placeholder = "Please write something down to post";
+  }
+},
     onUploadFile () {
       this.$refs.fileInput.click()
     },

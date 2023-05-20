@@ -144,15 +144,20 @@ export default {
         return cont;
       }
     },
-    commentdate(datecomment){
-       var date = datecomment.split('.',1);
-      var date1 = new Date(date);
-     var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    var datestring = date1.toLocaleDateString('en-US', options)+ " " +
-    date1.getHours() + ":" + (date1.getMinutes()<10?'0':'') + date1.getMinutes();
-      
-      return datestring;
-      },
+  commentdate(datecomment) {
+  if (datecomment === null) {
+    return ''; // Or any default value you want to return
+  }
+
+  var date = datecomment.split('.', 1);
+  var date1 = new Date(date);
+  var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  var datestring = date1.toLocaleDateString('en-US', options) + " " +
+    date1.getHours() + ":" + (date1.getMinutes() < 10 ? '0' : '') + date1.getMinutes();
+
+  return datestring;
+},
+
       dataPosts() {
       const url = 'http://localhost:3000/api/comment/' + this.user.id;
       const answer = document.getElementById('answer');
@@ -183,9 +188,9 @@ export default {
         postiD: post,
       };
       let answer = document.getElementById("answer");
-      axios
+      Axios
         .post(url, data1, {
-          headers: { Authorization: this.user.token },
+          headers: { Authorization: `Bearer ${this.user.token}` },
           params: { userId: this.user.id },
         })
         .then((response) => {
@@ -224,9 +229,9 @@ export default {
     formData.append("files", fileField.files[0]);
     formData.append("body", JSON.stringify(data1));
     const answer = document.getElementById("answer");
-    axios.post(url, formData, {
+    Axios.post(url, formData, {
       headers: {
-        Authorization: this.user.token,
+        Authorization: `Bearer ${this.user.token}`,
       },
       params: {
         userId: this.user.id,

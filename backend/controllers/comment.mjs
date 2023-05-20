@@ -7,6 +7,7 @@ import fs from 'fs';
 import script from '../js/script.mjs';
 import sql from 'mysql';
 import sequelize from '../config/db.config2.mjs';
+import jwt from 'jsonwebtoken';
 
 let arrayImages = [];
 let arrayVideos = [];
@@ -14,6 +15,8 @@ let arrayVideos = [];
 /* FUNCTION TO GET ALL COMMENTS DONE*/
 export const getAllComment = async (req, res, next) => {
   try {
+    console.log('req.params.idComment:', req.params.idComment);
+
     const comments = await sequelize.query(
       `SELECT c.idComment, c.idUserComment, c.comment, c.image, c.video, c.myDate, u.email, u.lastname, u.firstname, r.total_replies
       FROM Comments c
@@ -46,7 +49,6 @@ export const getAllComment = async (req, res, next) => {
       }
     );
 
-    
     var comments2 = JSON.parse(JSON.stringify(comments));
     var replies2 = JSON.parse(JSON.stringify(replies));
     var user_tags2 = JSON.parse(JSON.stringify(usertags[0].tag_posts));
@@ -59,7 +61,7 @@ export const getAllComment = async (req, res, next) => {
       }
       var tags = JSON.parse(JSON.stringify(user_tags2));
       var post_condition = true;
-      
+
       if (tags != null) {
         tags = tags.split(",");
         comments2[i].user_tag = false;
@@ -87,26 +89,36 @@ export const getAllComment = async (req, res, next) => {
 };
 
 
-/* FUNCTION TO CREATE A COMMENT DONE*/
+
+// FUNCTION TO CREATE A COMMENT!
 export const createComment = async (req, res, next) => {
   try {
     // Check if the user is authenticated
-    if (!req.user) {
+    const authToken = req.headers.authorization;
+    if (!authToken || !authToken.startsWith('Bearer ')) {
+      console.log('Unauthorized - Missing or invalid authorization header');
       return res.status(401).json({ message: 'Unauthorized' });
     }
+
+    // Extract the token from the Authorization header
+    const token = authToken.split(' ')[1];
+
+    // Verify and decode the JWT token
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    console.log('Decoded Token:', decodedToken);
+
+    // Access the authenticated user's information
+    const userId = decodedToken.userId;
+    console.log('Authenticated User ID:', userId);
 
     const url = `${req.protocol}://${req.get('host')}`;
     req.body = JSON.parse(req.body.body);
     let arrayImages = '';
 
     if (req.file) {
-      // Handle file upload
-
-      // Perform authorization check, e.g., if the user has permission to upload files
-
       const actual_date = new Date().toISOString();
       const commentData = {
-        idUserComment: req.body.userId,
+        idUserComment: userId,
         comment: req.body.comment,
         video: null,
         image: null,
@@ -123,13 +135,9 @@ export const createComment = async (req, res, next) => {
 
       res.status(201).json({ message: comment });
     } else {
-      // Handle comment without file upload
-
-      // Perform authorization check, e.g., if the user has permission to create comments
-
       const actual_date = new Date().toISOString();
       const commentData = {
-        idUserComment: req.body.userId,
+        idUserComment: userId,
         comment: req.body.comment,
         video: null,
         image: null,
@@ -141,7 +149,7 @@ export const createComment = async (req, res, next) => {
       res.status(201).json({ message: comment });
     }
   } catch (error) {
-    // Handle the error appropriately
+    console.error('Error:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
@@ -178,14 +186,16 @@ export const getOneComment = async (req, res, next) => {
       });
 
       const getallreplys = await sequelize.query(`
-        SELECT r.idReply, r.idCommentReply, r.idUser, r.reply, r.myDate, u.email, u.lastname, u.firstname
-        FROM Replies r
-        INNER JOIN Users u ON r.idUser = u.idUser
-        WHERE r.idCommentReply = :idComment
-      `, {
-        replacements: { idComment: req.params.idComment },
-        type: sequelize.QueryTypes.SELECT
-      });
+      SELECT r.idReply, r.idCommentReply, r.idUser, r.reply, r.myDate, u.email, u.lastname, u.firstname
+      FROM Replies r
+      INNER JOIN Users u ON r.idUser = u.idUser
+      WHERE r.idCommentReply = :idComment
+    `, {
+      replacements: { idComment: req.params.idComment },
+      type: sequelize.QueryTypes.SELECT,
+      include: [Comment, User] // Include the Comment and User models to fetch their associated data
+    });
+    
 
       const comments = JSON.parse(JSON.stringify(getComment));
       const replies = JSON.parse(JSON.stringify(getallreplys));

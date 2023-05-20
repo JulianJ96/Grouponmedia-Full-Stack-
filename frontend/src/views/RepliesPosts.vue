@@ -58,9 +58,8 @@ export default {
     },
     methods: {
       getPostsReplies(idComment){
-      let url = "/comment/"+this.user.id+"/"+idComment;
-        
-        this.$http.get(url, {
+      let url = `http://localhost:3000/api/comment/${this.user.id}/${idComment}`;
+        Axios.get(url, {
           headers: {
             'Authorization': `Bearer ${this.user.token}`
           },
@@ -76,42 +75,41 @@ export default {
           console.error(error);
         });
     },
-      reply (idComment) {    
-      const comment = document.getElementById("reply").value;
-     if(comment != ''){
-        let url = "/Reply";
-        let data1 = {
-          userId: this.user.id,
-          id: this.user.id,
-          idComment: this.user.idComment,
-          reply: comment
-        }
-        const formData = new FormData();
-        formData.append("body", JSON.stringify(data1));
-        this.$http.post(url,formData,{headers: {'Authorization': this.user.token},params:{'userId': this.user.id}}).then(response => {
-          let answer = document.getElementById("answer");
-          if(response.status == 201){
-          answer.classList.remove('alert-danger');
-          answer.classList.add('alert-success');
-          answer.innerHTML = "Reply created"
-          }else{
-          answer.classList.remove('alert-success');
-          answer.classList.add('alert-danger');
-          answer.innerHTML = "Something went wrong"
-          }
-           setTimeout(() => {
-          this.getPostsReplies(this.user.idComment)
-          this.clear()
-          },1000)
-          
-          }).catch(error => {
-            console.error(error.message);
-          });
-     }else{
-       document.getElementById(idComment).placeholder = "Please write something down to post"
-       
-     }
-    },
+ reply(idComment) {
+  const comment = document.getElementById(idComment).value;
+  if (comment !== '') {
+    const url = "http://localhost:3000/api/reply/";
+    const data1 = {
+      id: this.user.id,
+      idComment: idComment,
+      reply: this.replytext[idComment]
+    };
+
+    const formData = new FormData();
+    formData.append("body", JSON.stringify(data1));
+
+    Axios.post(url, formData, {
+      headers: {
+        'Authorization': `Bearer ${this.user.token}`,
+        'Content-Type': 'multipart/form-data',
+      },
+      params: {
+        'userId': this.user.id,
+      },
+    })
+      .then(response => {
+        setTimeout(() => {
+          this.clear();
+        }, 1000);
+        document.getElementById("answer").innerHTML = response.data.message;
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  } else {
+    document.getElementById(idComment).placeholder = "Please write something down to post";
+  }
+},
      clear () {
       let images = document.getElementById("imageUploaded"); 
       let answer = document.getElementById("answer");           

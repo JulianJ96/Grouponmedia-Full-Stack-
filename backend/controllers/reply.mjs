@@ -1,30 +1,76 @@
-import fs from 'fs';
-import script from '../js/script.mjs';
-import sql from 'mysql';
-import User from '../models/user.mjs';
+import { Sequelize } from 'sequelize';
+import sequelize from '../config/db.config2.mjs';
+import Comment from '../models/comment.mjs';
 import Reply from '../models/reply.mjs';
+import jwt from 'jsonwebtoken';
 
 export const createReply = async (req, res, next) => {
   try {
-    req.body = JSON.parse(req.body.body);
+    // Authentication middleware
+    // Add authentication logic here, if not already implemented
+
+    const authToken = req.headers.authorization;
+    if (!authToken || !authToken.startsWith('Bearer')) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const token = authToken.split(' ')[1];
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+
+    const userId = decodedToken.userId;
+    console.log('Authenticated User ID:', userId);
+
+    const { idComment, reply } = req.body;
+
+    if (!idComment || !reply) {
+      return res.status(400).json({ message: 'idComment and reply are required fields' });
+    }
+
     const actual_date = new Date();
     const date =
       actual_date.getMonth() + 1 + '-' + actual_date.getDate() + '-' + actual_date.getFullYear();
+    console.log('Date:', date);
+
     // Save Reply in the database
-    const reply = await Reply.create({
-      idUser: req.body.id,
-      idCommentReply: req.body.idComment,
-      reply: req.body.reply,
+    const commentId = req.params.idComment;
+
+    if (!commentId) {
+      return res.status(400).json({ message: 'Invalid idComment' });
+    }
+
+    const comment = await Comment.findOne({ where: { idComment: commentId } });
+
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    const createdReply = await Reply.create({
+      idUser: userId,
+      idCommentReply: commentId,
+      reply: reply,
       myDate: date,
     });
-    res.status(201).send({
-      message: reply,
+
+    console.log('Reply:', createdReply);
+
+    res.status(201).json({
+      message: 'Reply created successfully',
+      reply: createdReply,
     });
   } catch (error) {
-    res.status(500).send({
-      message: 'Reply was not created',
+    console.error('Error:', error);
+    res.status(500).json({
+      message: 'Reply was not created. Error: ' + error.message,
     });
   }
 };
+
+
+
+
+
+
+
+
 
 
