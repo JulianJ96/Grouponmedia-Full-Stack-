@@ -32,7 +32,7 @@ export const createReply = async (req, res, next) => {
     console.log('Date:', date);
 
     // Save Reply in the database
-    const commentId = req.params.idComment;
+    const commentId = req.body.idComment;
 
     if (!commentId) {
       return res.status(400).json({ message: 'Invalid idComment' });
@@ -64,6 +64,13 @@ export const createReply = async (req, res, next) => {
     });
   }
 };
+
+
+
+
+
+
+
 
 
 

@@ -188,7 +188,7 @@ export default {
         postiD: post,
       };
       let answer = document.getElementById("answer");
-      Axios
+      axios
         .post(url, data1, {
           headers: { Authorization: `Bearer ${this.user.token}` },
           params: { userId: this.user.id },
@@ -229,7 +229,7 @@ export default {
     formData.append("files", fileField.files[0]);
     formData.append("body", JSON.stringify(data1));
     const answer = document.getElementById("answer");
-    Axios.post(url, formData, {
+    axios.post(url, formData, {
       headers: {
         Authorization: `Bearer ${this.user.token}`,
       },
@@ -285,7 +285,7 @@ reply (idComment) {
     let answer = document.getElementById("answer");
     axios.post(url,formData,{
       headers: {
-        'Authorization': this.user.token
+        'Authorization': `Bearer ${this.user.token}`
       },
       params: {
         'userId': this.user.id

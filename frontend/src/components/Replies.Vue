@@ -54,7 +54,6 @@
 
 
 <script>
-import { error } from 'console';
 //import { store } from '..auth/store.js';
 import { mapState } from 'vuex/dist/vuex.esm-bundler.js';
 import axios from 'axios';
@@ -122,7 +121,7 @@ export default {
     getPostsReplies(idComment){
       let url = `http://localhost:3000/api/comment/${this.user.id}/${idComment}`;
 
-      Axios.get(url,{headers: {'Authorization': this.user.token}, params: {'userId': this.user.id}}).then(response => {
+      axios.get(url,{headers: {'Authorization': `Bearer ${this.user.token}`}, params: {'userId': this.user.id}}).then(response => {
         this.replyresponse = response.data.comments;
         this.clear()
         setTimeout(() => {
@@ -184,11 +183,11 @@ export default {
         let data = {
           userId: this.user.id,
           idComment: idComment,
-          reply: comment
+          reply: comment,
         }
         const formData = new FormData();
         formData.append("body", JSON.stringify(data1));
-        Axios.post(url, formData, {headers: {'Authorization': `Bearer ${this.user.token}`}, params: {'userId': this.user.id}}).then(response => {
+        axios.post(url, formData, {headers: {'Authorization': `Bearer ${this.user.token}`}, params: {'userId': this.user.id}}).then(response => {
           this.idcomment = this.user.idComment;
           this.getPostsReplies(this.idcomment);
           let answer = document.getElementById("answer");

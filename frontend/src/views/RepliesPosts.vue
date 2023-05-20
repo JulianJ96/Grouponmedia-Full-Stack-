@@ -28,7 +28,10 @@
 // @ is an alias to /src
 import Replies from '../components/Replies.vue';
 import { mapState } from "vuex";
-import Axios from 'axios';
+import axios from 'axios';
+
+
+
 export default {
   name: 'Dashboard',
   components: {
@@ -53,25 +56,28 @@ export default {
       user: (state) => state.user
     })
   },
-  mounted(){
-     this.getPostsReplies(this.user.idComment);
-    },
-    methods: {
-      getPostsReplies(idComment){
+  mounted() {
+    this.getPostsReplies(this.user.idComment);
+  },
+  methods: {
+    getPostsReplies(idComment) {
       let url = `http://localhost:3000/api/comment/${this.user.id}/${idComment}`;
-        Axios.get(url, {
+      axios
+        .get(url, {
           headers: {
-            'Authorization': `Bearer ${this.user.token}`
+            Authorization: `Bearer ${this.user.token}`,
           },
           params: {
-            'userId': this.user.id
-          }
-        }).then(response => {
+            userId: this.user.id,
+          },
+        })
+        .then((response) => {
           this.replyresponse = response.data.comments;
           setTimeout(() => {
             this.clear();
           }, 1000);
-        }).catch(error => {
+        })
+        .catch((error) => {
           console.error(error);
         });
     },
@@ -88,7 +94,7 @@ export default {
     const formData = new FormData();
     formData.append("body", JSON.stringify(data1));
 
-    Axios.post(url, formData, {
+    axios.post(url, formData, {
       headers: {
         'Authorization': `Bearer ${this.user.token}`,
         'Content-Type': 'multipart/form-data',
