@@ -285,7 +285,8 @@ reply (idComment) {
     let answer = document.getElementById("answer");
     axios.post(url,formData,{
       headers: {
-        'Authorization': `Bearer ${this.user.token}`
+        'Authorization': `Bearer ${this.user.token}`,
+        'Content-Type': 'application/json',
       },
       params: {
         'userId': this.user.id

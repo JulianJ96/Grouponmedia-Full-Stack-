@@ -81,39 +81,54 @@ export default {
           console.error(error);
         });
     },
- reply(idComment) {
-  const comment = document.getElementById(idComment).value;
+reply(idComment) {
+  const comment = document.getElementById("reply").value;
   if (comment !== '') {
     const url = "http://localhost:3000/api/reply/";
-    const data1 = {
+    const data = {
+      userId: this.user.id,
       id: this.user.id,
       idComment: idComment,
-      reply: this.replytext[idComment]
+      reply: comment,
     };
 
     const formData = new FormData();
-    formData.append("body", JSON.stringify(data1));
+    formData.append("body", JSON.stringify(data));
 
     axios.post(url, formData, {
       headers: {
         'Authorization': `Bearer ${this.user.token}`,
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'application/json',
       },
       params: {
         'userId': this.user.id,
       },
     })
       .then(response => {
+        this.idcomment = this.user.idComment;
+        this.getPostsReplies(this.idcomment);
+        let answer = document.getElementById("answer");
+        if (response.status === 201) {
+          answer.classList.remove('alert-danger');
+          answer.classList.add('alert-success');
+          answer.innerHTML = "Reply created";
+        } else {
+          answer.classList.remove('alert-danger');
+          answer.classList.add('alert-success');
+          answer.innerHTML = "Something went wrong";
+        }
         setTimeout(() => {
           this.clear();
         }, 1000);
-        document.getElementById("answer").innerHTML = response.data.message;
       })
       .catch(error => {
-        console.error(error);
+        let answer = document.getElementById("answer");
+        answer.classList.remove('alert-success');
+        answer.classList.add('alert-danger');
+        answer.innerHTML = error.response.data.message;
       });
   } else {
-    document.getElementById(idComment).placeholder = "Please write something down to post";
+    document.getElementById(idComment).placeholder = "Please write something here!";
   }
 },
      clear () {

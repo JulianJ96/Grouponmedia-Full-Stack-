@@ -17,22 +17,18 @@ export const createReply = async (req, res, next) => {
     const token = authToken.split(' ')[1];
     const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
 
-    const userId = decodedToken.userId;
-    console.log('Authenticated User ID:', userId);
-
-    const { idComment, reply } = req.body;
+    const { idComment, reply, userId } = req.body;
 
     if (!idComment || !reply) {
       return res.status(400).json({ message: 'idComment and reply are required fields' });
     }
-
+    
     const actual_date = new Date();
-    const date =
-      actual_date.getMonth() + 1 + '-' + actual_date.getDate() + '-' + actual_date.getFullYear();
+    const date = actual_date.getMonth() + 1 + '-' + actual_date.getDate() + '-' + actual_date.getFullYear();
     console.log('Date:', date);
 
     // Save Reply in the database
-    const commentId = req.body.idComment;
+    const commentId = idComment;
 
     if (!commentId) {
       return res.status(400).json({ message: 'Invalid idComment' });
@@ -64,6 +60,12 @@ export const createReply = async (req, res, next) => {
     });
   }
 };
+
+
+
+
+
+
 
 
 
