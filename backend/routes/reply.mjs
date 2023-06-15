@@ -5,6 +5,7 @@ import { createReply } from '../controllers/reply.mjs';
 
 const router = express.Router();
 
-router.post('/', auth, multer, createReply);
+router.post('/:idComment', auth, multer, createReply);
 
 export default router;
+

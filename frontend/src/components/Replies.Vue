@@ -177,27 +177,22 @@ export default {
       }
     },
 reply(idComment) {
-  const comment = document.getElementById("reply").value;
+  const comment = document.getElementById(idComment).value;
   if (comment !== '') {
-    const url = "http://localhost:3000/api/reply/";
+    const url = `http://localhost:3000/api/reply/${idComment}`;
     const data = {
       userId: this.user.id,
-      id: this.user.id,
-      idComment: idComment,
       reply: comment,
     };
 
-    const formData = new FormData();
-    formData.append("body", JSON.stringify(data));
-
-    axios.post(url, formData, {
+    axios.post(url, JSON.stringify(data), {
       headers: {
         'Authorization': `Bearer ${this.user.token}`,
         'Content-Type': 'application/json',
       },
       params: {
         'userId': this.user.id,
-      },
+      }
     })
       .then(response => {
         this.idcomment = this.user.idComment;

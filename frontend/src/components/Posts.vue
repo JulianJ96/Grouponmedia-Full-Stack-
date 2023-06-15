@@ -270,48 +270,50 @@ show (postdata) {
 },
 
 // updated reply function
-reply (idComment) {    
+reply(idComment) {
   const comment = document.getElementById(idComment).value;
-  if(comment != ''){
-    let url = "http://localhost:3000/api/reply";
-    let data1 = {
+  if (comment !== '') {
+    const url = `http://localhost:3000/api/reply/${idComment}`;
+    const data = {
       userId: this.user.id,
-      id: this.user.id,
-      idComment: idComment,
-      reply: comment
-    }
-    const formData = new FormData();
-    formData.append("body", JSON.stringify(data1));
-    let answer = document.getElementById("answer");
-    axios.post(url,formData,{
+      reply: comment,
+    };
+
+    axios.post(url, JSON.stringify(data), {
       headers: {
         'Authorization': `Bearer ${this.user.token}`,
         'Content-Type': 'application/json',
       },
       params: {
-        'userId': this.user.id
+        'userId': this.user.id,
       }
-    }).then(response => {
-      this.clear()
-      if(response.status == 201){
-        answer.classList.remove('alert-danger');
-        answer.classList.add('alert-success');
-        answer.innerHTML = "Reply created"
-      }else{
+    })
+      .then(response => {
+        console.log(response);
+        this.idcomment = idComment; // Assign the correct value
+        this.getPostsReplies(this.idcomment);
+        let answer = document.getElementById("answer");
+        if (response.status === 201) {
+          answer.classList.remove('alert-danger');
+          answer.classList.add('alert-success');
+          answer.innerHTML = "Reply created";
+        } else {
+          answer.classList.remove('alert-danger');
+          answer.classList.add('alert-success');
+          answer.innerHTML = "Something went wrong";
+        }
+        setTimeout(() => {
+          this.clear();
+        }, 1000);
+      })
+      .catch(error => {
+        let answer = document.getElementById("answer");
         answer.classList.remove('alert-success');
         answer.classList.add('alert-danger');
-        answer.innerHTML = "Something went wrong"
-      }
-      setTimeout(() => {
-        this.dataPosts();
-      },1000)
-    }).catch(error => { 
-      answer.classList.remove('alert-success');
-      answer.classList.add('alert-danger');
-      answer.innerHTML = error.response.data.message;
-    });
-  }else{
-    document.getElementById(idComment).placeholder = "Please write something down to post"
+        answer.innerHTML = error.response.data.message;
+      });
+  } else {
+    document.getElementById(idComment).placeholder = "Please write something here!";
   }
 },
 
