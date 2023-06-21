@@ -266,7 +266,7 @@ show (postdata) {
   this.$store.commit('unread',unread);
   this.addPost(this.user.id,postdata.idComment);
   this.$store.commit('comment',postdata.idComment);
-  this.$router.push({path:'/replies'});
+  this.$router.push({path:'/reply'});
 },
 
 // updated reply function
@@ -293,7 +293,7 @@ reply(idComment) {
         this.idcomment = idComment; // Assign the correct value
         this.getPostsReplies(this.idcomment);
         let answer = document.getElementById("answer");
-        if (response.status === 201) {
+        if (response && response.status === 201) {
           answer.classList.remove('alert-danger');
           answer.classList.add('alert-success');
           answer.innerHTML = "Reply created";
@@ -310,7 +310,11 @@ reply(idComment) {
         let answer = document.getElementById("answer");
         answer.classList.remove('alert-success');
         answer.classList.add('alert-danger');
-        answer.innerHTML = error.response.data.message;
+        if (error.response && error.response.data && error.response.data.message) {
+          answer.innerHTML = error.response.data.message;
+        } else {
+          answer.innerHTML = "Something went wrong";
+        }
       });
   } else {
     document.getElementById(idComment).placeholder = "Please write something here!";

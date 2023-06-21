@@ -120,8 +120,10 @@ export default {
 },
     getPostsReplies(idComment){
       let url = `http://localhost:3000/api/comment/${this.user.id}/${idComment}`;
+        console.log("log1",this.user.id);
+        console.log("log2",idComment);
 
-      axios.get(url,{headers: {'Authorization': `Bearer ${this.user.token}`}, params: {'userId': this.user.id}}).then(response => {
+axios.get(url,{headers: {'Authorization': `Bearer ${this.user.token}`}, params: {'userId': this.user.id}}).then(response => {
         this.replyresponse = response.data.comments;
         this.clear()
         setTimeout(() => {
@@ -146,7 +148,7 @@ export default {
         formData.append("file", fileField.files[0]);
         formData.append("data", JSON.stringify(data));
         const answer = document.getElementById("answer");
-        Axios.post(url, formData, {headers:{Authorization: `Bearer ${this.user.token}` }, params: { userId: this.user.user } })
+        axios.post(url, formData, {headers:{Authorization: `Bearer ${this.user.token}` }, params: { userId: this.user.user } })
         .then(response => {
           setTimeout(()=> {
             this.clear();
@@ -177,7 +179,8 @@ export default {
       }
     },
 reply(idComment) {
-  const comment = document.getElementById(idComment).value;
+  const commentInput = document.getElementById(idComment);
+  const comment = commentInput.value;
   if (comment !== '') {
     const url = `http://localhost:3000/api/reply/${idComment}`;
     const data = {
@@ -185,40 +188,51 @@ reply(idComment) {
       reply: comment,
     };
 
-    axios.post(url, JSON.stringify(data), {
-      headers: {
-        'Authorization': `Bearer ${this.user.token}`,
-        'Content-Type': 'application/json',
-      },
-      params: {
-        'userId': this.user.id,
-      }
-    })
-      .then(response => {
-        this.idcomment = this.user.idComment;
-        this.getPostsReplies(this.idcomment);
-        let answer = document.getElementById("answer");
-        if (response.status === 201) {
-          answer.classList.remove('alert-danger');
-          answer.classList.add('alert-success');
-          answer.innerHTML = "Reply created";
-        } else {
-          answer.classList.remove('alert-danger');
-          answer.classList.add('alert-success');
-          answer.innerHTML = "Something went wrong";
+    // Retrieve the token from localStorage
+    const storedToken = localStorage.getItem('token');
+
+    if (storedToken) {
+      // Use the stored token if available
+      axios.post(url, data, {
+        headers: {
+          'Authorization': `Bearer ${storedToken}`,
+          'Content-Type': 'application/json',
         }
-        setTimeout(() => {
-          this.clear();
-        }, 1000);
       })
-      .catch(error => {
-        let answer = document.getElementById("answer");
-        answer.classList.remove('alert-success');
-        answer.classList.add('alert-danger');
-        answer.innerHTML = error.response.data.message;
-      });
+        .then(response => {
+          this.idcomment = idComment;
+          this.getPostsReplies(this.idcomment);
+          let answer = document.getElementById("answer");
+          if (response.status === 201) {
+            answer.classList.remove('alert-danger');
+            answer.classList.add('alert-success');
+            answer.innerHTML = "Reply created";
+          } else {
+            answer.classList.remove('alert-success');
+            answer.classList.add('alert-danger');
+            answer.innerHTML = "Something went wrong";
+          }
+          setTimeout(() => {
+            this.clear();
+          }, 1000);
+        })
+        .catch(error => {
+          let answer = document.getElementById("answer");
+          answer.classList.remove('alert-success');
+          answer.classList.add('alert-danger');
+          if (error.response && error.response.data && error.response.data.message) {
+            answer.innerHTML = error.response.data.message;
+          } else {
+            answer.innerHTML = "Something went wrong";
+          }
+        });
+    } else {
+      // Handle case when token is not available
+      console.log('Token not found. User needs to authenticate again.');
+      // You can implement your own logic here, such as redirecting to a login page
+    }
   } else {
-    document.getElementById(idComment).placeholder = "Please write something here!";
+    commentInput.placeholder = "Please write something here!";
   }
 },
     onUploadFile(){

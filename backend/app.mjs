@@ -8,6 +8,9 @@ import sequelize from './config/db.config2.mjs';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 
+
+
+
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -160,15 +160,16 @@ export const getOneComment = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-      throw 'Authorization header missing';
+      throw new Error('Authorization header missing'); // Use the Error constructor to create an Error object
     }
     const token = authHeader.split(' ')[1];
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decodedToken.userId;
     req.auth = { userId };
-    if (req.body.userId && req.body.userId !== userId) {
-      throw 'Invalid user ID';
+    if (req.auth.userId !== userId) { // Use req.auth.userId to compare with userId
+      throw new Error('Invalid user ID');
     } else {
+      console.log('req.params:', req.params); // Add this console log
       const getComment = await sequelize.query(`
         SELECT c.idComment, c.idUserComment, c.comment, c.image, c.video, c.myDate, u.email, u.lastname, u.firstname, r.total_replies
         FROM Comments c
@@ -185,22 +186,21 @@ export const getOneComment = async (req, res, next) => {
         type: sequelize.QueryTypes.SELECT
       });
 
-      const getallreplys = await sequelize.query(`
-      SELECT r.idReply, r.idCommentReply, r.idUser, r.reply, r.myDate, u.email, u.lastname, u.firstname
-      FROM Replies r
-      INNER JOIN Users u ON r.idUser = u.idUser
-      WHERE r.idCommentReply = :idComment
-    `, {
-      replacements: { idComment: req.params.idComment },
-      type: sequelize.QueryTypes.SELECT,
-      include: [Comment, User] // Include the Comment and User models to fetch their associated data
-    });
-    
+      const getAllReplys = await sequelize.query(`
+        SELECT r.idReply, r.idCommentReply, r.idUser, r.reply, r.myDate, u.email, u.lastname, u.firstname
+        FROM Replies r
+        INNER JOIN Users u ON r.idUser = u.idUser
+        WHERE r.idCommentReply = :idComment
+      `, {
+        replacements: { idComment: req.params.idComment },
+        type: sequelize.QueryTypes.SELECT,
+        include: [Comment, User] // Include the Comment and User models to fetch their associated data
+      });
 
       const comments = JSON.parse(JSON.stringify(getComment));
-      const replies = JSON.parse(JSON.stringify(getallreplys));
+      const replies = JSON.parse(JSON.stringify(getAllReplys));
       let comments2 = JSON.parse(JSON.stringify(getComment));
-      let replies2 = JSON.parse(JSON.stringify(getallreplys));
+      let replies2 = JSON.parse(JSON.stringify(getAllReplys));
       for (let i = 0; i < comments2.length; i++) {
         for (let j = 0; j < replies2.length; j++) {
           if (comments2[i].idComment == replies2[j].idCommentReply) {
@@ -223,4 +223,6 @@ export const getOneComment = async (req, res, next) => {
     });
   }
 };
+
+
 

@@ -223,21 +223,22 @@ post() {
 },
 
   
-    show (idComment) {
-    var display = document.getElementById('show'+idComment);
+show(idComment) {
+  var display = document.getElementById('show' + idComment);
 
-    if(display.classList.contains('d-none')){
-      display.classList.remove('d-none');
-      display.classList.add('d-block');
-    }else{
-  
-      display.classList.remove('d-block');
-      display.classList.add('d-none');
-    }
-    
-    },
+  if (display.classList.contains('d-none')) {
+    display.classList.remove('d-none');
+    display.classList.add('d-block');
+  } else {
+    display.classList.remove('d-block');
+    display.classList.add('d-none');
+  }
+},
+
+
 reply(idComment) {
-  const comment = document.getElementById(idComment).value;
+  const commentInput = document.getElementById(idComment);
+  const comment = commentInput.value;
   if (comment !== '') {
     const url = `http://localhost:3000/api/reply/${idComment}`;
     const data = {
@@ -245,9 +246,13 @@ reply(idComment) {
       reply: comment,
     };
 
-    axios.post(url, data, {
+    // Assuming you have obtained the user token after authentication
+    const userToken = this.user.token; // Replace with the actual user token
+
+    // Include the token in the request headers
+    Axios.post(url, data, {
       headers: {
-        'Authorization': `Bearer ${this.user.token}`,
+        'Authorization': `Bearer ${userToken}`,
         'Content-Type': 'application/json',
       }
     })
@@ -272,10 +277,14 @@ reply(idComment) {
         let answer = document.getElementById("answer");
         answer.classList.remove('alert-success');
         answer.classList.add('alert-danger');
-        answer.innerHTML = error.response.data.message;
+        if (error.response && error.response.data && error.response.data.message) {
+          answer.innerHTML = error.response.data.message;
+        } else {
+          answer.innerHTML = "Something went wrong";
+        }
       });
   } else {
-    document.getElementById(idComment).placeholder = "Please write something here!";
+    commentInput.placeholder = "Please write something here!";
   }
 },
     onUploadFile () {
