@@ -260,14 +260,18 @@ export default {
 },
 
   
-  // updated show function
-show (postdata) {
-  let unread = this.user.post_unread - 1;
-  this.$store.commit('unread',unread);
-  this.addPost(this.user.id,postdata.idComment);
-  this.$store.commit('comment',postdata.idComment);
-  this.$router.push({path:'/reply'});
+// updated show function
+show(postdata) {
+  this.addPost(this.user.id, postdata.idComment);
+  this.$store.commit('comment', postdata.idComment);
+  this.$router.push({
+    path: '/reply',
+    query: { commentId: postdata.idComment } // Pass the comment ID as a query parameter
+  });
 },
+
+// Storing the authentication token in local storage
+
 
 // updated reply function
 reply(idComment) {
@@ -279,9 +283,14 @@ reply(idComment) {
       reply: comment,
     };
 
+    // Retrieve the authentication token from a cookie
+    const cookies = document.cookie.split('; ');
+    const tokenCookie = cookies.find(cookie => cookie.startsWith('token='));
+    const token = tokenCookie ? tokenCookie.split('=')[1] : null;
+
     axios.post(url, JSON.stringify(data), {
       headers: {
-        'Authorization': `Bearer ${this.user.token}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       params: {
@@ -290,8 +299,7 @@ reply(idComment) {
     })
       .then(response => {
         console.log(response);
-        this.idcomment = idComment; // Assign the correct value
-        this.getPostsReplies(this.idcomment);
+        this.getPostsReplies(idComment);
         let answer = document.getElementById("answer");
         if (response && response.status === 201) {
           answer.classList.remove('alert-danger');
@@ -319,7 +327,11 @@ reply(idComment) {
   } else {
     document.getElementById(idComment).placeholder = "Please write something here!";
   }
+
+  // Storing the authentication token in a cookie
+  document.cookie = `token=${this.user.token}; expires=${new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toUTCString()}; path=/`;
 },
+
 
     onUploadFile () {
       this.$refs.fileInput.click()
@@ -390,27 +402,36 @@ reply(idComment) {
         //Take the first selected file
         
     },
-    clear () {
-      let images = document.getElementById("imageUploaded");  
-      let answer = document.getElementById("answer");      
-      if (document.getElementById("video")){
-        const picture1 = document.getElementById('video');
-            images.removeChild(picture1);
-      }else{
-        if (document.getElementById("image")){
-          const picture1 = document.getElementById('image');
-            images.removeChild(picture1);
-        } 
+  clear() {
+  let images = document.getElementById("imageUploaded");
+  let answer = document.getElementById("answer");
+
+  if (images) {
+    if (document.getElementById("video")) {
+      const picture1 = document.getElementById("video");
+      images.removeChild(picture1);
+    } else {
+      if (document.getElementById("image")) {
+        const picture1 = document.getElementById("image");
+        images.removeChild(picture1);
       }
-      answer.innerHTML = ""
-      this.username = "",
-      this.password = "",
-      this.comment = "",
-      this.image = null,
-      this.video = null,
-      this.multimedia = null,
-      this.replytext = []
     }
+  }
+
+  if (answer) {
+    answer.innerHTML = "";
+  }
+
+  this.username = "";
+  this.password = "";
+  this.comment = "";
+  this.image = null;
+  this.video = null;
+  this.multimedia = null;
+  this.replytext = "";
+  this.replyComment = "";
+}
+
   },
 }
 </script>
