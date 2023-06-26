@@ -21,15 +21,14 @@
       </div>
     </div>
   </div>
-</template>
+</template>"
+
+
 
 <script>
-// @ is an alias to /src
 import Replies from '../components/Replies.vue';
 import { mapState } from "vuex";
 import axios from 'axios';
-
-
 
 export default {
   name: 'Dashboard',
@@ -38,73 +37,57 @@ export default {
   },
   data() {
     return {
-      username: "",
-      password: "",
-      replyComment:"",
-      idcomment:"",
-      image: null,
-      video: null,
-      multimedia: null,
-      replyresponse:[],
-      user_tag:null,
-      replytext: []
+      replyComment: "",
+      idcomment: "",
     };
   },
-   computed: {
+  computed: {
     ...mapState({
       user: (state) => state.user
     })
   },
-   mounted() {
+  mounted() {
     if (this.user && this.user.idComment) {
       this.getPostsReplies(this.user.idComment);
     }
   },
-
   methods: {
     getPostsReplies(idComment) {
-      let url = `http://localhost:3000/api/comment/${idComment}`;
-      axios
-        .get(url, {
-          headers: {
-            Authorization: `Bearer ${this.user.token}`,
-          },
-          params: {
-            userId: this.user.id,
-          },
-        })
-        .then((response) => {
+      const url = `http://localhost:3000/api/comment/${idComment}`;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${this.user.token}`,
+        },
+        params: {
+          userId: this.user.id,
+        },
+      };
+
+      axios.get(url, config)
+        .then(response => {
           this.replyresponse = response.data;
           setTimeout(() => {
             this.clear();
           }, 1000);
         })
-        .catch((error) => {
+        .catch(error => {
           console.error(error);
         });
     },
-  
-  reply(idComment) {
-    const commentInput = document.getElementById(idComment);
-    const comment = commentInput.value;
-    if (comment !== '') {
-      const url = `http://localhost:3000/api/reply/${idComment}`;
-      const data = {
-        userId: this.user.id,
-        reply: comment,
-      };
 
-      // Retrieve the token from localStorage
-      const storedToken = localStorage.getItem('token');
-
-      if (storedToken) {
-        // Use the stored token if available
-        axios.post(url, data, {
+    reply(idComment) {
+      if (this.replyComment !== '') {
+        const url = `http://localhost:3000/api/comment/${idComment}/reply`;
+        const data = {
+          reply: this.replyComment,
+        };
+        const config = {
           headers: {
-            'Authorization': `Bearer ${storedToken}`,
+            Authorization: `Bearer ${this.user.token}`,
             'Content-Type': 'application/json',
-          }
-        })
+          },
+        };
+        axios.post(url, data, config)
           .then(response => {
             this.idcomment = idComment;
             this.getPostsReplies(this.idcomment);
@@ -133,19 +116,14 @@ export default {
             }
           });
       } else {
-        // Handle case when token is not available
-        console.log('Token not found. User needs to authenticate again.');
-        // You can implement your own logic here, such as redirecting to a login page
+        let commentInput = document.getElementById("reply");
+        commentInput.placeholder = "Please write something here!";
       }
-    } else {
-      commentInput.placeholder = "Please write something here!";
-    }
-  }
-},
+    },
+
     clear() {
       let images = document.getElementById("imageUploaded");
       let answer = document.getElementById("answer");
-
       if (images) {
         if (document.getElementById("video")) {
           const picture1 = document.getElementById("video");
@@ -157,34 +135,30 @@ export default {
           }
         }
       }
-
       if (answer) {
         answer.innerHTML = "";
       }
-
-      this.username = "";
-      this.password = "";
-      this.comment = "";
-      this.image = null;
-      this.video = null;
-      this.multimedia = null;
-      this.replytext = "";
       this.replyComment = "";
     }
   }
+};
 </script>
+
 <style lang="scss">
 html {
-    height: 100%;
+  height: 100%;
 }
+
 body {
-    height: 100%;
+  height: 100%;
 }
-#mainr{
+
+#mainr {
   height: 100%;
   overflow: auto;
 }
-#hello{
+
+#hello {
   height: auto;
 }
 </style>
