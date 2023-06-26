@@ -18,64 +18,78 @@
             <p :class="postsdata.user_tag == true ? 'post_read' : 'post_not_read'" class="text-uppercase"></p>
           </div>
         </div>
-        <div id="comments" class="col-12 ms-3 mt-sm-3">
+
+        <!-- Display post content -->
+        <div id="postContent" class="col-12">
+          <!-- Display post comment -->
           <div id="comments" class="col-12 ms-3 me-sm-3">
-            <p class="text-start ">{{ postsdata.comment }}</p>
+            <p class="text-start">{{ postsdata.comment }}</p>
           </div>
-        </div>
-        <div v-if="postsdata.video" id="postsmultimedia" class="col-12 w">
-          <video class="img-fluid" controls>
-            <source :src="require('../../../assets/' + postsdata.video)" type="video/mp4">
-          </video>
-        </div>
-        <div v-if="postsdata.image" id="postsimages" class="col-12">
-          <img :src="require('../../../assets/' + postsdata.image)" class="img-fluid" :alt="postsdata.image" />
-        </div>
-        <div v-if="postsdata.reply" id="replypost" class="col-12 mt-sm-3">
-          <div id="replyposts" class="border border-primary col-12">
-            <p class="text-start ">{{ postsdata.reply }}</p>
+
+          <!-- Display post multimedia (video or image) -->
+          <div v-if="postsdata.video" id="postsmultimedia" class="col-12 w">
+            <video class="img-fluid" controls>
+              <source :src="require('../../../assets/' + postsdata.video)" type="video/mp4">
+            </video>
           </div>
-        </div>
-        <div id="comments_actions" class="col-12 d-flex mt-2 mb-2 me-2">
-          <div id="comments" class="border-primary col-xl-12 d-flex flex-row">
-            <a class="navbar-brand me-2 pt-0 pb-0" href="#">
-              <img src="../assets/Groupomania-Logos/comment.webp" class="img-fluid" alt="" width="25" height="25" />
-            </a>
-            <a
-              href="#"
-              :id="'button' + postsdata.idComment"
-              @click="show(postsdata)"
-              class="navbar-brand me-2 pt-0 pb-0"
-            >
-              {{ postsdata.total_replies }} Comments
-            </a>
-            <a href="#" :id="'button' + postsdata.idComment" @click="reply(postsdata.idComment)" class="navbar-brand me-2 pt-0 pb-0">
-              Reply
-            </a>
+          <div v-if="postsdata.image" id="postsimages" class="col-12">
+            <img :src="require('../../../assets/' + postsdata.image)" class="img-fluid" :alt="postsdata.image" />
+          </div>
 
-            <input
-              type="text"
-              :id="'commentinput' + postsdata.idComment"
-              class="d-none"
-              v-model="newreply"
-              :placeholder="'Reply to ' + postsdata.firstname"
-              @keydown.enter="addReply(postsdata.idComment)"
-            />
+         
+         <!-- Display post replies -->
+          <div v-if="postsdata.replies && postsdata.replies.length > 0" id="replypost" class="col-12 mt-sm-3">
+            <div v-for="reply in postsdata.replies" :key="reply.idReply" class="border border-primary col-12">
+              <p class="text-start">{{ reply.reply }}</p>
+              <!-- Additional reply details, if needed -->
+              <span>First name: {{ postsdata.firstname }}</span>
+            </div>
+          </div>
+          <!-- Display comments actions -->
+          <div id="comments_actions" class="col-12 d-flex mt-2 mb-2 me-2">
+            <div id="comments" class="border-primary col-xl-12 d-flex flex-row">
+              <a class="navbar-brand me-2 pt-0 pb-0" href="#">
+                <img src="../assets/Groupomania-Logos/comment.webp" class="img-fluid" alt="" width="25" height="25" />
+              </a>
+              <a
+                href="#"
+                :id="'button' + postsdata.idComment"
+                @click="show(postsdata)"
+                class="navbar-brand me-2 pt-0 pb-0"
+              >
+                {{ postsdata.total_replies }} Comments
+              </a>
+              <a href="#" :id="'button' + postsdata.idComment" @click="reply(postsdata.idComment)" class="navbar-brand me-2 pt-0 pb-0">
+                Reply
+              </a>
 
-            <a
-              href="#"
-              :id="'cancel' + postsdata.idComment"
-              class="navbar-brand me-2 pt-0 pb-0 d-none"
-              @click="cancelReply(postsdata.idComment)"
-            >
-              Cancel
-            </a>
+              <input
+                type="text"
+                :id="'commentinput' + postsdata.idComment"
+                class="d-none"
+                v-model="newreply"
+                :placeholder="'Reply to ' + postsdata.firstname"
+                @keydown.enter="addReply(postsdata.idComment)"
+              />
+
+              <a
+                href="#"
+                :id="'cancel' + postsdata.idComment"
+                class="navbar-brand me-2 pt-0 pb-0 d-none"
+                @click="cancelReply(postsdata.idComment)"
+              >
+                Cancel
+              </a>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+
+
 
 <script>
 // import store from '../auth/store.js';
@@ -221,21 +235,36 @@ export default {
       return date.toLocaleDateString();
     },
     show(postsdata) {
-      const button = 'button' + postsdata.idComment;
-      const commentinput = 'commentinput' + postsdata.idComment;
-      const cancel = 'cancel' + postsdata.idComment;
+  const button = 'button' + postsdata.idComment;
+  const commentinput = 'commentinput' + postsdata.idComment;
+  const cancel = 'cancel' + postsdata.idComment;
 
-      document.getElementById(button).classList.add('d-none');
-      document.getElementById(commentinput).classList.remove('d-none');
-      document.getElementById(cancel).classList.remove('d-none');
+  document.getElementById(button).classList.add('d-none');
+  document.getElementById(commentinput).classList.remove('d-none');
+  document.getElementById(cancel).classList.remove('d-none');
 
-      this.addPost(this.user.id, postsdata.idComment);
-      this.$store.commit('comment', postsdata.idComment);
-      this.$router.push({
-        path: '/reply',
-        query: { commentId: postsdata.idComment } // Pass the comment ID as a query parameter
-      });
-    },
+  const getRepliesPost = (idComment, userId) => {
+    // Implementation of the getRepliesPost function logic goes here
+    // You can retrieve the replies based on the comment ID and user ID
+    // and return them
+    // Example: return someApi.getReplies(idComment, userId);
+  };
+
+  // Assuming 'replies' is an array of reply objects for the current post
+  const replies = getRepliesPost(postsdata.idComment, this.user.id);
+
+  // Assign the replies to the 'postsdata' object
+  postsdata.replies = replies;
+
+  this.addPost(this.user.id, postsdata.idComment);
+  this.$store.commit('comment', postsdata.idComment);
+  this.$router.push({
+    path: '/reply',
+    query: { commentId: postsdata.idComment } // Pass the comment ID as a query parameter
+  });
+},
+
+   
     reply(idComment) {
       const commentinput = 'commentinput' + idComment;
       const cancel = 'cancel' + idComment;
