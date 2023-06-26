@@ -29,17 +29,18 @@
           <!-- Display post multimedia (video or image) -->
           <div v-if="postsdata.video" id="postsmultimedia" class="col-12 w">
             <video class="img-fluid" controls>
-              <source :src="require('../../../assets/' + postsdata.video)" type="video/mp4">
+              <source :src="('@/assets/' + postsdata.video).default" type="video/mp4">
+              Your browser does not support the video tag.
             </video>
           </div>
-          <div v-if="postsdata.image" id="postsimages" class="col-12">
-            <img :src="require('../../../assets/' + postsdata.image)" class="img-fluid" :alt="postsdata.image" />
-          </div>
 
-         
+
+          <div v-if="postsdata.image" id="postsimages" class="col-12">
+            <img :src="('src/assets/' + postsdata.image)" class="img-fluid" :alt="postsdata.image" />
+          </div>
          <!-- Display post replies -->
           <div v-if="postsdata.replies && postsdata.replies.length > 0" id="replypost" class="col-12 mt-sm-3">
-            <div v-for="reply in postsdata.replies" :key="reply.idReply" class="border border-primary col-12">
+            <div v-for="reply in postsdata.replies" :key="reply.idReply" class="border border-gray col-12">
               <p class="text-start">{{ reply.reply }}</p>
               <!-- Additional reply details, if needed -->
               <span>First name: {{ postsdata.firstname }}</span>
@@ -126,7 +127,7 @@ export default {
   computed: {
     ...mapState({
       user: (state) => state.user
-    })
+    }),
   },
   methods: {
     dataPosts() {
@@ -382,5 +383,8 @@ export default {
 .post_not_read {
   background-color: #ff5757;
 }
+
+
+
 </style>
     
