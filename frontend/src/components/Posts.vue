@@ -29,15 +29,16 @@
           <!-- Display post multimedia (video or image) -->
           <div v-if="postsdata.video" id="postsmultimedia" class="col-12 w">
             <video class="img-fluid" controls>
-              <source :src="('@/assets/' + postsdata.video).default" type="video/mp4">
+              <source :src="('src/assets' + postsdata.video).default" type="video/mp4">
               Your browser does not support the video tag.
             </video>
           </div>
 
-
           <div v-if="postsdata.image" id="postsimages" class="col-12">
             <img :src="('src/assets/' + postsdata.image)" class="img-fluid" :alt="postsdata.image" />
           </div>
+
+
          <!-- Display post replies -->
           <div v-if="postsdata.replies && postsdata.replies.length > 0" id="replypost" class="col-12 mt-sm-3">
             <div v-for="reply in postsdata.replies" :key="reply.idReply" class="border border-gray col-12">
